@@ -1,9 +1,0 @@
-#V2
-clear
-select * from pasta;
-define table pasta;
-info for root;
-info for db;
-insert into person [{"id":"wow"}]
-select * from person
-insert into person [{"id":"lKu08c9Xpf3q0pK1sYUr","firstName":"Spike","lastName":"Spiegel","country":r"country:o1dqigEA0Kra1Eu1Et0R","series":r"series:EJAaafb7qlqDDIC6BmIV"}];
