@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application
+        android:allowBackup="true"
+        android:supportsRtl="true"
+    >
+        <provider
+            android:name="dev.henkle.context.ContextProvider"
+            android:authorities="${applicationId}.librarycontextprovider"
+            android:exported="false"
+            android:initOrder="100"
+        />
+    </application>
+</manifest>

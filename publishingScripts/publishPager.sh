@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+./gradlew clean
+# To maven.henkle.dev
+./gradlew :pager:publishKotlinMultiplatformPublicationToMavenHenkleDevReleasesRepository
+./gradlew :pager:publishIosArm64PublicationToMavenHenkleDevReleasesRepository
+./gradlew :pager:publishIosX64PublicationToMavenHenkleDevReleasesRepository
+./gradlew :pager:publishIosSimulatorArm64PublicationToMavenHenkleDevReleasesRepository
+./gradlew :pager:publishAndroidReleasePublicationToMavenHenkleDevReleasesRepository
+### To GitHub Packages
+./gradlew :pager:publishKotlinMultiplatformPublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :pager:publishIosArm64PublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :pager:publishIosX64PublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :pager:publishIosSimulatorArm64PublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :pager:publishAndroidReleasePublicationToKMPBrowserGitHubPackagesRepository

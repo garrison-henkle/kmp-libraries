@@ -1,0 +1,137 @@
+[versions]
+agp = "8.7.2"
+# commit hash of the latet
+#android-math = "master-5e0f60bac9daaefbab7df96f4501c0209700418b"
+android-math = "1.0.0"
+android-compileSdk = "34"
+android-minSdk = "24"
+android-targetSdk = "34"
+androidx-activity = "1.9.2"
+androidx-activityCompose = "1.9.1"
+androidx-appcompat = "1.7.0"
+androidx-browser = "1.8.0"
+androidx-constraintlayout = "2.1.4"
+androidx-core-ktx = "1.13.1"
+androidx-espresso-core = "3.6.1"
+androidx-material = "1.11.0"
+androidx-security-crypto = "1.0.0"
+androidx-test-junit = "1.2.1"
+bignum = "0.3.9"
+buildkonfig = "0.15.1"
+cachemap = "0.2.4"
+cklib = "0.3.3"
+coil = "3.0.3"
+#coil = "3.0.0-alpha10"
+compose = "1.7.1"
+#compose = "1.6.11"
+compose-jetpack = "1.7.5"
+conventions = "1.0.0"
+credential-secure-storage = "1.0.0"
+google-play-billing = "7.0.0"
+gradle-plugin-publish = "1.1.0"
+hash = "0.5.1"
+haze = "0.7.1"
+jetbrains-markdown = "0.7.3"
+jvm-native-lib-loader = "2.5.0"
+junit = "4.13.2"
+kermit = "2.0.4"
+kotest = "6.0.0.M1"
+kotlin = "2.1.0"
+kotlinx-atomic-fu = "0.26.0"
+kotlinx-browser = "0.2"
+kotlinx-coroutines = "1.9.0"
+kotlinx-datetime = "0.6.1"
+kotlinx-rpc = "0.2.4"
+kotlinx-serialization = "1.7.3"
+ktor = "3.0.1"
+lazy-table = "1.9.0-beta01"
+#lazy-table = "1.8.0"
+listenable-futures-workaround = "9999.0-empty-to-avoid-conflict-with-guava"
+logback = "1.5.11"
+maven-publish = "0.28.0"
+secure-random = "0.3.2"
+swift-klib = "0.5.1"
+tree-sitter = "0.24.0"
+ua-parser-js = "1.0.37"
+uuid = "0.8.4"
+
+[libraries]
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+android-math = { module = "com.github.gregcockroft:AndroidMath", version.ref = "android-math" }
+androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity"}
+androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
+androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso-core" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "androidx-security-crypto" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+bignum = { module = "com.ionspin.kotlin:bignum", version.ref = "bignum" }
+cachemap = { module = "io.github.charlietap:cachemap-suspend", version.ref = "cachemap" }
+coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-jetpack" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-jetpack" }
+credential-secure-storage = { module = "com.microsoft:credential-secure-storage", version.ref = "credential-secure-storage" }
+google-play-billing = { module = "com.android.billingclient:billing-ktx", version.ref = "google-play-billing" }
+hash = { module = "org.kotlincrypto.hash:sha2", version.ref = "hash" }
+haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
+jetbrains-markdown = { module = "org.jetbrains:markdown", version.ref = "jetbrains-markdown" }
+jvm-native-lib-loader = { module = "org.scijava:native-lib-loader", version.ref = "jvm-native-lib-loader" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+kotest-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-multiplatform-gradle-plugin = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+kotlinx-atomic-fu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlinx-atomic-fu" }
+kotlinx-atomic-fu-plugin = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "kotlinx-atomic-fu" }
+kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser-wasm-js", version.ref = "kotlinx-browser" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines"}
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines"}
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization"}
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-engine-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-engine-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktor-client-engine-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
+ktor-client-engine-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+ktor-client-engine-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-sockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
+ktor-server-engine-cio = { module = "io.ktor:ktor-server-cio", version.ref = "ktor" }
+ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+lazy-table = { module = "io.github.oleksandrbalan:lazytable", version.ref = "lazy-table"}
+listenable-futures = { module = "com.google.guava:listenablefuture", version.ref = "listenable-futures-workaround" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref="logback" }
+secure-random = { module = "org.kotlincrypto:secure-random", version.ref = "secure-random" }
+tree-sitter = { module = "io.github.tree-sitter:ktreesitter", version.ref = "tree-sitter" }
+uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
+cklib = { id = "co.touchlab.cklib", version.ref = "cklib" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+conventionsAndroidLibrary = { id = "dev.henkle.conventions.android.library", version.ref = "conventions" }
+conventionsKMPApp = { id = "dev.henkle.conventions.kmp.app", version.ref = "conventions" }
+conventionsKMPNonAndroidApp = { id = "dev.henkle.conventions.kmp.non.android.app", version.ref = "conventions" }
+conventionsKMPLibrary = { id = "dev.henkle.conventions.kmp.library", version.ref = "conventions" }
+conventionsPublishing = { id = "dev.henkle.conventions.publishing", version.ref = "conventions" }
+gradlePluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose" }
+kotest = { id = 'io.kotest.multiplatform', version.ref = "kotest" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinxAtomicFu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "kotlinx-atomic-fu" }
+kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+swiftKLib = { id = "io.github.ttypic.swiftklib", version.ref = "swift-klib" }
+tree-sitter = { id = "io.github.tree-sitter.ktreesitter-plugin", version.ref = "tree-sitter" }

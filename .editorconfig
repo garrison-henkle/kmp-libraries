@@ -1,0 +1,21 @@
+root = true
+
+[*]
+end_of_line = lf
+trim_trailing_whitespace = true
+max_line_length = 140
+ij_visual_guides = 140
+
+[*.{kt,kts}]
+ktlint_standard_function-naming = disabled
+ktlint_standard_string-template-indent = disabled
+ktlint_standard_multiline-expression-wrapping = disabled
+ktlint_standard_property-naming = disabled
+ktlint_standard_no-consecutive-comments = disabled
+ktlint_standard_backing-property-naming = disabled
+ij_kotlin_name_count_to_use_star_import = 1024
+ij_kotlin_name_count_to_use_star_import_for_members = 1024
+
+[*.java]
+ij_java_class_count_to_use_import_on_demand = 1024
+ij_java_names_count_to_use_import_on_demand = 1024

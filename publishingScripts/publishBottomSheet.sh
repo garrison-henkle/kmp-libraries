@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+./gradlew clean
+# To GitHub Packages
+./gradlew :better-bottom-sheet:publishKotlinMultiplatformPublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :better-bottom-sheet:publishIosArm64PublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :better-bottom-sheet:publishIosX64PublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :better-bottom-sheet:publishIosSimulatorArm64PublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :better-bottom-sheet:publishAndroidReleasePublicationToKMPBrowserGitHubPackagesRepository
+#### To maven.henkle.dev
+./gradlew :better-bottom-sheet:publishKotlinMultiplatformPublicationToMavenHenkleDevReleasesRepository
+./gradlew :better-bottom-sheet:publishIosArm64PublicationToMavenHenkleDevReleasesRepository
+./gradlew :better-bottom-sheet:publishIosX64PublicationToMavenHenkleDevReleasesRepository
+./gradlew :better-bottom-sheet:publishIosSimulatorArm64PublicationToMavenHenkleDevReleasesRepository
+./gradlew :better-bottom-sheet:publishAndroidReleasePublicationToMavenHenkleDevReleasesRepository

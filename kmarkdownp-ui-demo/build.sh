@@ -1,0 +1,1 @@
+zig build -p build/zig_artifacts --cache-dir build/.zigcache
