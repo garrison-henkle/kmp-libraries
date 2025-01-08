@@ -1,10 +1,20 @@
 package dev.henkle.markdown.ui.demo
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -13,7 +23,9 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
-import dev.henkle.markdown.parser.treesitter.TreesitterParser
+import com.aallam.ktoken.Encoding
+import com.aallam.ktoken.Tokenizer
+import dev.henkle.markdown.parser.jetbrains.JetbrainsParser
 import dev.henkle.markdown.ui.KMarkdownPUI
 import dev.henkle.markdown.ui.Markdown
 import dev.henkle.markdown.ui.MarkdownUIComponents
@@ -22,6 +34,10 @@ import dev.henkle.markdown.ui.model.InlineUIElement
 import dev.henkle.markdown.ui.model.UIElement
 import dev.henkle.markdown.ui.utils.LocalMarkdownStyle
 import dev.henkle.markdown.ui.utils.ext.getText
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+
+private val nonMathDollarSignRegex = "(?<!\$|\\\\)\\$(?=\\s?\\d)".toRegex()
 
 private val BULLETS_TESTING = """
     2. **Quadratic Formula**:
@@ -349,6 +365,8 @@ Thus, the roots of the equation are \( x = -2 \) and \( x = -3 \) [[1]](https://
 
 Feel free to ask if you need more details or examples!
 """.trim()
+
+val EX_MARKDOWN_2_PROCESSED = EX_MARKDOWN_2
     .replace(oldValue = "\\[", newValue = "$$")
     .replace(oldValue = "\\]", newValue = "$$")
     .replace(oldValue = "\\(", newValue = "$")
@@ -552,7 +570,6 @@ private fun String.preprocessMarkdown(): String =
 
     }.toString()
 
-private val nonMathDollarSignRegex = "(?<!\$|\\\\)\\$(?=\\s?\\d)".toRegex()
 private fun String.preprocessMarkdownRegex(): String =
     StringBuilder(this)
         .apply {
@@ -577,81 +594,101 @@ private val BUG = """
     Altana raised **$100 million in a Series B round** in 2022.
 """.trimIndent().preprocessMarkdown()
 
+@Stable
+data class TextToken(val text: String)
 
 @Composable
 fun App() {
-    val parser = remember { KMarkdownPUI(markdownParser = TreesitterParser()) }
-    Markdown(
-        modifier = Modifier
-            .background(color = Color.White)
-            .padding(all = 5.dp),
-        markdown = BUG,
-        parser = parser,
-        linkHandler = { label, url ->
-            Logger.e("KMarkdownP Demo") { "Clicked on url labeled '$label': '$url'" }
-        },
-        spacing = 10.dp,
-        components = MarkdownUIComponents(
-            inlineMath = { element -> LatexView(text = element.equation) },
-            mathBlock = { element -> LatexView(text = element.equation) },
-            inlineLink = { element ->
-                val (processedLabel, isCitation) = element.label.firstOrNull()?.let { labelElement ->
-                    // We need to strip the enclosing brackets that the BE sends. These are always in Text elements
-                    if (labelElement is UIElement.Text) {
-                        val match = bracketRegex.find(input = labelElement.text)
-                        val citationNumber = match?.groupValues?.getOrNull(index = 1)
-                        if (citationNumber != null) {
-                            labelElement.copy(text = AnnotatedString(text = citationNumber)) to true
+    val parser = remember { KMarkdownPUI(markdownParser = JetbrainsParser()) }
+    val textState = remember { mutableStateListOf<TextToken>() }
+    val text by remember {
+        derivedStateOf {
+            textState.joinToString(separator = "") { it.text }
+        }
+    }
+    LaunchedEffect(Unit) {
+        val tokenizer = Tokenizer.of(encoding = Encoding.CL100K_BASE)
+        val tokens = tokenizer.encode(text = EX_MARKDOWN_2).map { tokenizer.decode(it) }
+        tokens.forEach { token ->
+            textState += TextToken(text = token)
+            delay(timeMillis = 25)
+        }
+    }
+    val scrollState = rememberScrollState()
+//    Column(modifier = Modifier.verticalScroll(state = scrollState)) {
+        Markdown(
+            modifier = Modifier
+                .background(color = Color.White)
+                .padding(all = 5.dp),
+            useLazyColumn = true,
+            markdown = text,
+            parser = parser,
+            linkHandler = { label, url ->
+                Logger.e("KMarkdownP Demo") { "Clicked on url labeled '$label': '$url'" }
+            },
+            spacing = 10.dp,
+            components = MarkdownUIComponents(
+                inlineMath = { element -> LatexView(text = element.equation) },
+                mathBlock = { element -> LatexView(text = element.equation) },
+                inlineLink = { element ->
+                    val (processedLabel, isCitation) = element.label.firstOrNull()?.let { labelElement ->
+                        // We need to strip the enclosing brackets that the BE sends. These are always in Text elements
+                        if (labelElement is UIElement.Text) {
+                            val match = bracketRegex.find(input = labelElement.text)
+                            val citationNumber = match?.groupValues?.getOrNull(index = 1)
+                            if (citationNumber != null) {
+                                labelElement.copy(text = AnnotatedString(text = citationNumber)) to true
+                            } else {
+                                labelElement to false
+                            }
                         } else {
-                            labelElement to false
+                            null
                         }
+                    } ?: (UIElement.Text(id = Int.MAX_VALUE.toString(), text = AnnotatedString(text = "")) to false)
+
+                    if (isCitation) {
+                        MarkdownLink(
+                            title = element.title,
+                            label = listOf(processedLabel),
+                            labelRaw = element.labelRaw,
+                            style = LocalMarkdownStyle.current.inlineLink.linkStyle,
+                        )
                     } else {
-                        null
-                    }
-                } ?: (UIElement.Text(text = AnnotatedString(text = "")) to false)
-
-                if (isCitation) {
-                    MarkdownLink(
-                        title = element.title,
-                        label = listOf(processedLabel),
-                        labelRaw = element.labelRaw,
-                        style = LocalMarkdownStyle.current.inlineLink.linkStyle,
-                    )
-                } else {
-                    val markdownStyle = LocalMarkdownStyle.current
-                    Text(
-                        text = AnnotatedString(
-                            text = element.label.getText(),
-                            paragraphStyle = ParagraphStyle(lineHeight = markdownStyle.text.lineHeight),
-                            spanStyle = SpanStyle(
-                                color = Color.Blue,
-                                fontSize = markdownStyle.text.fontSize,
-                                fontWeight = markdownStyle.text.fontWeight,
-                                fontFamily = markdownStyle.text.fontFamily,
-                                letterSpacing = markdownStyle.text.letterSpacing,
+                        val markdownStyle = LocalMarkdownStyle.current
+                        Text(
+                            text = AnnotatedString(
+                                text = element.label.getText(),
+                                paragraphStyle = ParagraphStyle(lineHeight = markdownStyle.text.lineHeight),
+                                spanStyle = SpanStyle(
+                                    color = Color.Blue,
+                                    fontSize = markdownStyle.text.fontSize,
+                                    fontWeight = markdownStyle.text.fontWeight,
+                                    fontFamily = markdownStyle.text.fontFamily,
+                                    letterSpacing = markdownStyle.text.letterSpacing,
+                                ),
                             ),
-                        ),
-                    )
+                        )
+                    }
                 }
-            }
-        ),
-        getInlineContentAlignment = { element ->
-            when (element) {
-                is InlineUIElement.Link -> {
-                    val isCitation = element.label
-                        .firstOrNull()
-                        ?.let { it as? UIElement.Text }
-                        ?.text
-                        ?.contains(regex = bracketRegex)
-                        ?: false
-                    if (isCitation) PlaceholderVerticalAlign.Center else PlaceholderVerticalAlign.TextBottom
-                }
+            ),
+            getInlineContentAlignment = { element ->
+                when (element) {
+                    is InlineUIElement.Link -> {
+                        val isCitation = element.label
+                            .firstOrNull()
+                            ?.let { it as? UIElement.Text }
+                            ?.text
+                            ?.contains(regex = bracketRegex)
+                            ?: false
+                        if (isCitation) PlaceholderVerticalAlign.Center else PlaceholderVerticalAlign.TextBottom
+                    }
 
-                is InlineUIElement.Code,
-                is InlineUIElement.Math -> null
-            }
-        },
-    )
+                    is InlineUIElement.Code,
+                    is InlineUIElement.Math -> null
+                }
+            },
+        )
+//    }
 }
 
 private val bracketRegex = """\[(.+)]""".toRegex()

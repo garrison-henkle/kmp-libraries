@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.runtime.Composable
@@ -15,6 +16,7 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import co.touchlab.kermit.Logger
 import dev.henkle.markdown.ui.components.MarkdownInlineContent
 import dev.henkle.markdown.ui.generator.UIIRGenerator
 import dev.henkle.markdown.ui.model.InlineUIElement
@@ -108,6 +110,55 @@ fun Markdown(
 }
 
 @Composable
+fun LazyListScope.Markdown(
+    modifier: Modifier = Modifier,
+    markdown: UIIRGenerator.IRGenerationResult,
+    components: MarkdownUIComponents = MarkdownUIComponents(),
+    style: MarkdownStyle = MarkdownStyle(),
+    getInlineContentAlignment: (element: InlineUIElement) -> PlaceholderVerticalAlign? = { null },
+    spacing: Dp = Dp.Unspecified,
+    linkHandler: (label: String, url: String) -> Unit,
+) {
+    ProvideMarkdownUIComponents(components = components) {
+        ProvideMarkdownStyle(style = style) {
+            ProvideMarkdownUrls(urls = markdown.urls) {
+                ProvideMarkdownLinkHandler(handler = linkHandler) {
+                    ProvideMarkdownInlineContent(inlineContent = emptyMap()) {
+                        InlineMarkdownMeasurer(
+                            modifier = modifier,
+                            inlineElements = markdown.inlineContent,
+                            getInlineContentAlignment = getInlineContentAlignment,
+                        ) { measurements ->
+                            val inlineContent = remember(measurements) {
+                                markdown.inlineContent.associate { element ->
+                                    val (measurement, alignment) = measurements[element.id]
+                                        ?: (TextUnitSize() to PlaceholderVerticalAlign.Center)
+                                    element.id to InlineTextContent(
+                                        placeholder = Placeholder(
+                                            width = measurement.width,
+                                            height = measurement.height,
+                                            placeholderVerticalAlign = alignment,
+                                        ),
+                                        children = { MarkdownInlineContent(element = element) }
+                                    )
+                                }
+                            }
+                            ProvideMarkdownInlineContent(inlineContent = inlineContent) {
+                                MarkdownContent(
+                                    modifier = modifier,
+                                    elements = markdown.elements,
+                                    spacing = spacing,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun MarkdownContent(
     modifier: Modifier = Modifier,
     elements: List<UIElement>,
@@ -116,12 +167,7 @@ fun MarkdownContent(
 ) {
     if (useLazyColumn) {
         LazyColumn(modifier = modifier) {
-            itemsIndexed(items = elements) { i, element ->
-                MarkdownItem(element = element)
-                if (spacing != Dp.Unspecified && i != elements.lastIndex) {
-                    Spacer(modifier = Modifier.height(height = spacing))
-                }
-            }
+            MarkdownContent(elements = elements, spacing = spacing)
         }
     } else {
         Column(modifier = modifier) {
@@ -133,7 +179,18 @@ fun MarkdownContent(
             }
         }
     }
+}
 
+fun LazyListScope.MarkdownContent(
+    elements: List<UIElement>,
+    spacing: Dp = Dp.Unspecified,
+) {
+    itemsIndexed(items = elements, key = { _, element -> element.id }) { i, element ->
+        MarkdownItem(element = element)
+        if (spacing != Dp.Unspecified && i != elements.lastIndex) {
+            Spacer(modifier = Modifier.height(height = spacing))
+        }
+    }
 }
 
 @Composable

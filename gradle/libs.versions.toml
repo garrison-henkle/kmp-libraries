@@ -43,6 +43,7 @@ kotlinx-coroutines = "1.9.0"
 kotlinx-datetime = "0.6.1"
 kotlinx-rpc = "0.2.4"
 kotlinx-serialization = "1.7.3"
+ktoken = "0.4.0"
 ktor = "3.0.1"
 lazy-table = "1.9.0-beta01"
 #lazy-table = "1.8.0"
@@ -95,6 +96,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines"}
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization"}
+ktoken = { module = "com.aallam.ktoken:ktoken", version.ref = "ktoken" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-engine-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }

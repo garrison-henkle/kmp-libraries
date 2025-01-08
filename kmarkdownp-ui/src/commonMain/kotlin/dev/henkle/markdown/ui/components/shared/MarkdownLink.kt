@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import dev.henkle.markdown.ui.MarkdownContent
 import dev.henkle.markdown.ui.model.UIElement
 import dev.henkle.markdown.ui.model.style.LinkStyle
+import dev.henkle.markdown.ui.recomposeHighlighter
 import dev.henkle.markdown.ui.utils.LocalMarkdownLinkHandler
 import dev.henkle.markdown.ui.utils.LocalMarkdownStyle
 import dev.henkle.markdown.ui.utils.LocalMarkdownUrls
@@ -48,6 +49,7 @@ fun MarkdownLink(
     }
     Box(
         modifier = modifier
+            .recomposeHighlighter()
             .padding(values = style.margin)
             .width(width = linkWidth)
             .height(height = linkHeight)
@@ -60,7 +62,7 @@ fun MarkdownLink(
         contentAlignment = Alignment.Center,
     ) {
         ProvideMarkdownStyle(style = markdownStyle.copy(text = style.textStyle)) {
-            MarkdownContent(elements = title ?: label)
+            MarkdownContent(modifier = Modifier.recomposeHighlighter(), elements = title ?: label)
         }
     }
 }

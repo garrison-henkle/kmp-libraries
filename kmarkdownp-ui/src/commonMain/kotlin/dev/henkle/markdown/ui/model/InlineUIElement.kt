@@ -1,13 +1,21 @@
 package dev.henkle.markdown.ui.model
 
+import androidx.compose.runtime.Stable
+
+@Stable
 sealed class InlineUIElement {
-    val id: String = getID()
+    abstract val id: String
 
-    data class Math(val equation: String) : InlineUIElement()
-    data class Link(val labelRaw: String, val label: List<UIElement>, val title: List<UIElement>?) : InlineUIElement()
-    data class Code(val code: String) : InlineUIElement()
+    @Stable
+    data class Math(override val id: String, val equation: String) : InlineUIElement()
+    @Stable
+    data class Link(
+        override val id: String,
+        val labelRaw: String,
+        val label: List<UIElement>,
+        val title: List<UIElement>?,
+    ) : InlineUIElement()
 
-    companion object {
-        private fun getID(): String = UIElement.nextID.getAndIncrement().toString()
-    }
+    @Stable
+    data class Code(override val id: String, val code: String) : InlineUIElement()
 }
