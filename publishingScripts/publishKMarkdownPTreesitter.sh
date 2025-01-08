@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+./gradlew clean
+# To maven.henkle.dev
+./gradlew :kmarkdownp-parser-treesitter:publishKotlinMultiplatformPublicationToMavenHenkleDevReleasesRepository
+./gradlew :kmarkdownp-parser-treesitter:publishIosArm64PublicationToMavenHenkleDevReleasesRepository
+./gradlew :kmarkdownp-parser-treesitter:publishIosX64PublicationToMavenHenkleDevReleasesRepository
+./gradlew :kmarkdownp-parser-treesitter:publishIosSimulatorArm64PublicationToMavenHenkleDevReleasesRepository
+./gradlew :kmarkdownp-parser-treesitter:publishAndroidReleasePublicationToMavenHenkleDevReleasesRepository
+## To GitHub Packages
+./gradlew :kmarkdownp-parser-treesitter:publishKotlinMultiplatformPublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :kmarkdownp-parser-treesitter:publishIosArm64PublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :kmarkdownp-parser-treesitter:publishIosX64PublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :kmarkdownp-parser-treesitter:publishIosSimulatorArm64PublicationToKMPBrowserGitHubPackagesRepository
+./gradlew :kmarkdownp-parser-treesitter:publishAndroidReleasePublicationToKMPBrowserGitHubPackagesRepository
