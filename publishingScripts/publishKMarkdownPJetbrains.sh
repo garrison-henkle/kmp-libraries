@@ -3,12 +3,10 @@
 # To maven.henkle.dev
 ./gradlew :kmarkdownp-parser-jetbrains:publishKotlinMultiplatformPublicationToMavenHenkleDevReleasesRepository
 ./gradlew :kmarkdownp-parser-jetbrains:publishIosArm64PublicationToMavenHenkleDevReleasesRepository
-./gradlew :kmarkdownp-parser-jetbrains:publishIosX64PublicationToMavenHenkleDevReleasesRepository
 ./gradlew :kmarkdownp-parser-jetbrains:publishIosSimulatorArm64PublicationToMavenHenkleDevReleasesRepository
 ./gradlew :kmarkdownp-parser-jetbrains:publishAndroidReleasePublicationToMavenHenkleDevReleasesRepository
 ## To GitHub Packages
 ./gradlew :kmarkdownp-parser-jetbrains:publishKotlinMultiplatformPublicationToKMPBrowserGitHubPackagesRepository
 ./gradlew :kmarkdownp-parser-jetbrains:publishIosArm64PublicationToKMPBrowserGitHubPackagesRepository
-./gradlew :kmarkdownp-parser-jetbrains:publishIosX64PublicationToKMPBrowserGitHubPackagesRepository
 ./gradlew :kmarkdownp-parser-jetbrains:publishIosSimulatorArm64PublicationToKMPBrowserGitHubPackagesRepository
 ./gradlew :kmarkdownp-parser-jetbrains:publishAndroidReleasePublicationToKMPBrowserGitHubPackagesRepository
