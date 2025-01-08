@@ -4,6 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,7 +18,9 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
-import dev.henkle.markdown.parser.treesitter.TreesitterParser
+import com.aallam.ktoken.Encoding
+import com.aallam.ktoken.Tokenizer
+import dev.henkle.markdown.parser.jetbrains.JetbrainsParser
 import dev.henkle.markdown.ui.KMarkdownPUI
 import dev.henkle.markdown.ui.Markdown
 import dev.henkle.markdown.ui.MarkdownUIComponents
@@ -22,6 +29,9 @@ import dev.henkle.markdown.ui.model.InlineUIElement
 import dev.henkle.markdown.ui.model.UIElement
 import dev.henkle.markdown.ui.utils.LocalMarkdownStyle
 import dev.henkle.markdown.ui.utils.ext.getText
+import kotlinx.coroutines.delay
+
+private val nonMathDollarSignRegex = "(?<!\$|\\\\)\\$(?=\\s?\\d)".toRegex()
 
 private val BULLETS_TESTING = """
     2. **Quadratic Formula**:
@@ -349,6 +359,8 @@ Thus, the roots of the equation are \( x = -2 \) and \( x = -3 \) [[1]](https://
 
 Feel free to ask if you need more details or examples!
 """.trim()
+
+val EX_MARKDOWN_2_PROCESSED = EX_MARKDOWN_2
     .replace(oldValue = "\\[", newValue = "$$")
     .replace(oldValue = "\\]", newValue = "$$")
     .replace(oldValue = "\\(", newValue = "$")
@@ -477,7 +489,7 @@ private const val INLINE_MATH_DELIMITER = "$"
  *         - Properly delimited markdown math blocks e.g. `$$`
  *         - Dollar signs followed by a number (which is usually a price) e.g. `$1.00` or `$ 1.00`
  */
-private fun String.preprocessMarkdown(): String =
+fun String.preprocessMarkdown(): String =
     StringBuilder(length).apply {
         val input = this@preprocessMarkdown
         var i = 0
@@ -552,7 +564,6 @@ private fun String.preprocessMarkdown(): String =
 
     }.toString()
 
-private val nonMathDollarSignRegex = "(?<!\$|\\\\)\\$(?=\\s?\\d)".toRegex()
 private fun String.preprocessMarkdownRegex(): String =
     StringBuilder(this)
         .apply {
@@ -577,15 +588,31 @@ private val BUG = """
     Altana raised **$100 million in a Series B round** in 2022.
 """.trimIndent().preprocessMarkdown()
 
+@Stable
+private data class TextToken(val text: String)
 
 @Composable
 fun App() {
-    val parser = remember { KMarkdownPUI(markdownParser = TreesitterParser()) }
+    val parser = remember { KMarkdownPUI(markdownParser = JetbrainsParser()) }
+    val textState = remember { mutableStateListOf<TextToken>() }
+    val text by remember {
+        derivedStateOf {
+            textState.joinToString(separator = "") { it.text }
+        }
+    }
+    LaunchedEffect(Unit) {
+        val tokenizer = Tokenizer.of(encoding = Encoding.CL100K_BASE)
+        val tokens = tokenizer.encode(text = EX_MARKDOWN_2).map { tokenizer.decode(it) }
+        tokens.forEach { token ->
+            textState += TextToken(text = token)
+            delay(timeMillis = 25)
+        }
+    }
     Markdown(
         modifier = Modifier
             .background(color = Color.White)
             .padding(all = 5.dp),
-        markdown = BUG,
+        markdown = text,
         parser = parser,
         linkHandler = { label, url ->
             Logger.e("KMarkdownP Demo") { "Clicked on url labeled '$label': '$url'" }

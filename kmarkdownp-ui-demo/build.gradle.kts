@@ -44,9 +44,10 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.kermit)
+            implementation(libs.ktoken)
             implementation(projects.kmarkdownpUi)
             implementation(projects.kmarkdownpParserJetbrains)
-            implementation(projects.kmarkdownpParserTreesitter)
+//            implementation(projects.kmarkdownpParserTreesitter)
 
         }
 
@@ -54,6 +55,7 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.logback)
+                implementation(libs.tree.sitter)
             }
         }
 
