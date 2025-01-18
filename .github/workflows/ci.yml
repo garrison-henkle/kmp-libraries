@@ -9,11 +9,6 @@ on:
       - "**/jni/*"
       - gradle/**
   pull_request:
-    paths:
-      - "/*.kt"
-      - "**/*.kts"
-      - "**/jni/*"
-      - gradle/**
 
 concurrency:
   cancel-in-progress: true
