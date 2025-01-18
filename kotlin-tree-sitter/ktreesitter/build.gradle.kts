@@ -1,5 +1,6 @@
 import java.io.OutputStream.nullOutputStream
 import java.net.URI
+import java.util.Properties
 import org.gradle.internal.os.OperatingSystem
 import org.gradle.kotlin.dsl.support.useToRun
 import org.jetbrains.dokka.base.DokkaBase
@@ -20,12 +21,11 @@ val treesitterDir = rootDir.resolve("tree-sitter")
 version = property("project.version") as String
 
 plugins {
-    `maven-publish`
-    signing
     alias(libs.plugins.kotlin.mpp)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotest)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.publishing)
 }
 
 buildscript {
@@ -154,64 +154,34 @@ tasks.create<Jar>("javadocJar") {
     from(files(rootDir.resolve("README.md")))
 }
 
-publishing {
-    publications.withType(MavenPublication::class) {
-        artifact(tasks["javadocJar"])
-        pom {
-            name = "KTreeSitter"
-            description = "Kotlin bindings to the Tree-sitter parsing library"
-            url = "https://tree-sitter.github.io/kotlin-tree-sitter/"
-            inceptionYear = "2024"
-            organization {
-                name = "tree-sitter"
-                url = "https://github.com/tree-sitter"
-            }
-            licenses {
-                license {
-                    name = "MIT License"
-                    url = "https://spdx.org/licenses/MIT.html"
-                }
-            }
-            developers {
-                developer {
-                    id = "ObserverOfTime"
-                    name = "ObserverOfTime"
-                    email = "chronobserver@disroot.org"
-                    url = "https://github.com/ObserverOfTime"
-                }
-            }
-            scm {
-                url = "https://github.com/tree-sitter/kotlin-tree-sitter"
-                connection = "scm:git:git://github.com/tree-sitter/kotlin-tree-sitter.git"
-                developerConnection = "scm:git:ssh://github.com/tree-sitter/kotlin-tree-sitter.git"
-            }
-            issueManagement {
-                system = "GitHub Issues"
-                url = "https://github.com/tree-sitter/kotlin-tree-sitter/issues"
-            }
-            ciManagement {
-                system = "GitHub Actions"
-                url = "https://github.com/tree-sitter/kotlin-tree-sitter/actions"
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            name = "local"
-            url = uri(layout.buildDirectory.dir("repo"))
-        }
+private var localPropertiesInstance: Properties? = null
+val Project.localProperties: Properties
+    get() = localPropertiesInstance ?: run {
+    file("${project.rootDir}/../local.properties").inputStream().use {
+        Properties().apply { load(it) }.also { localPropertiesInstance = it }
     }
 }
 
-signing {
-    isRequired = System.getenv("CI") != null
-    if (isRequired) {
-        val key = System.getenv("SIGNING_KEY")
-        val password = System.getenv("SIGNING_PASSWORD")
-        useInMemoryPgpKeys(key, password)
+publishing {
+    val mavenUrl = localProperties.getProperty("maven.url")
+        ?: System.getenv("MAVEN_URL")
+        ?: throw IllegalStateException("'maven.url' is not defined in local.properties!")
+    val mavenUsername = localProperties.getProperty("maven.username")
+        ?: System.getenv("MAVEN_USERNAME")
+        ?: throw IllegalStateException("'maven.username' is not defined in local.properties!")
+    val mavenPassword = localProperties.getProperty("maven.password")
+        ?: System.getenv("MAVEN_PASSWORD")
+        ?: throw IllegalStateException("'maven.password' is not defined in local.properties!")
+    repositories {
+        maven {
+            name = "Reposilite"
+            url = uri(mavenUrl)
+            credentials {
+                username = mavenUsername
+                password = mavenPassword
+            }
+        }
     }
-    sign(publishing.publications)
 }
 
 tasks.dokkaHtml {
@@ -317,8 +287,4 @@ tasks.getByName<Test>("jvmTest") {
         outputLocation.set(layout.buildDirectory.dir("reports/xml"))
     }
     systemProperty("gradle.build.dir", layout.buildDirectory.get().asFile.path)
-}
-
-tasks.withType<AbstractPublishToMaven>().configureEach {
-    mustRunAfter(tasks.withType<Sign>())
 }

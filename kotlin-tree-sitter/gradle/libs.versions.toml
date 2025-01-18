@@ -4,6 +4,7 @@ kotlin-stdlib = "2.1.0"
 android-gradle = { strictly = "8.5.2" }
 kotest = "6.0.0.M1"
 dokka = "2.0.0-Beta"
+publishing = "0.28.0"
 
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin-stdlib" }
@@ -20,6 +21,7 @@ kotlin-mpp = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-
 android-library = { id = "com.android.library", version.ref = "android-gradle" }
 kotest = { id = "io.kotest.multiplatform", version.ref = "kotest" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+publishing = { id = "com.vanniktech.maven.publish", version.ref = "publishing" }
 
 [bundles]
 kotest-core = [

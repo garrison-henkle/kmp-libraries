@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotest) apply false
     alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.publishing) apply false
 }
 
 allprojects {
