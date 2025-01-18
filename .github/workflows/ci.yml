@@ -22,36 +22,36 @@ defaults:
     working-directory: ./kotlin-tree-sitter
 
 jobs:
-  generate:
-    runs-on: ubuntu-latest
-    name: Generate grammar files
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-          cache: gradle
-          cache-dependency-path: |
-            gradle/libs.versions.toml
-            gradle/wrapper/gradle-wrapper.properties
-      - name: Cache Kotlin/Native prebuilt
-        uses: actions/cache@v4
-        with:
-          path: ${{runner.tool_cache}}/konan/kotlin-native-prebuilt-*
-          key: konan-${{runner.os}}-prebuilt-2.0
-      - name: Generate files
-        run: ./gradlew --no-daemon generateGrammarFiles
-        env:
-          KONAN_DATA_DIR: ${{runner.tool_cache}}/konan
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: generated-files
-          path: kotlin-tree-sitter/languages/*/build/generated/**
-          retention-days: 1
+#  generate:
+#    runs-on: ubuntu-latest
+#    name: Generate grammar files
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#      - name: Set up Java
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: temurin
+#          java-version: 17
+#          cache: gradle
+#          cache-dependency-path: |
+#            gradle/libs.versions.toml
+#            gradle/wrapper/gradle-wrapper.properties
+#      - name: Cache Kotlin/Native prebuilt
+#        uses: actions/cache@v4
+#        with:
+#          path: ${{runner.tool_cache}}/konan/kotlin-native-prebuilt-*
+#          key: konan-${{runner.os}}-prebuilt-2.0
+#      - name: Generate files
+#        run: ./gradlew --no-daemon generateGrammarFiles
+#        env:
+#          KONAN_DATA_DIR: ${{runner.tool_cache}}/konan
+#      - name: Upload artifact
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: generated-files
+#          path: kotlin-tree-sitter/languages/*/build/generated/**
+#          retention-days: 1
   build-libs:
     runs-on: ${{matrix.os}}
     name: Build ${{matrix.platform}}-${{matrix.arch}} library
@@ -106,13 +106,13 @@ jobs:
         run: sudo apt-get install -qy {binutils,gcc}-aarch64-linux-gnu
         if: runner.os == 'Linux' && matrix.arch == 'aarch64'
       - name: Configure CMake
-        working-directory: ktreesitter
+        working-directory: ./kotlin-tree-sitter/ktreesitter
         run: >-
           cmake -B .cmake/build ${{matrix.cmake_args}}
           -DCMAKE_INSTALL_LIBDIR=lib/${{matrix.platform}}/${{matrix.arch}}
           -DCMAKE_INSTALL_BINDIR=lib/${{matrix.platform}}/${{matrix.arch}}
       - name: Build JNI library
-        working-directory: ktreesitter
+        working-directory: ./kotlin-tree-sitter/ktreesitter
         run: |-
           cmake --build .cmake/build --config Release
           cmake --install .cmake/build --config Release --prefix .cmake/build
