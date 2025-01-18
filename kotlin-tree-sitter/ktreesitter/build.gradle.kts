@@ -155,21 +155,25 @@ tasks.create<Jar>("javadocJar") {
 }
 
 private var localPropertiesInstance: Properties? = null
-val Project.localProperties: Properties
+val Project.localProperties: Properties?
     get() = localPropertiesInstance ?: run {
-    file("${project.rootDir}/../local.properties").inputStream().use {
-        Properties().apply { load(it) }.also { localPropertiesInstance = it }
+        try {
+            file("${project.rootDir}/../local.properties").inputStream().use {
+                Properties().apply { load(it) }.also { localPropertiesInstance = it }
+            }
+        } catch (ex: Exception) {
+            null
+        }
     }
-}
 
 publishing {
-    val mavenUrl = localProperties.getProperty("maven.url")
+    val mavenUrl = localProperties?.getProperty("maven.url")
         ?: System.getenv("MAVEN_URL")
         ?: throw IllegalStateException("'maven.url' is not defined in local.properties!")
-    val mavenUsername = localProperties.getProperty("maven.username")
+    val mavenUsername = localProperties?.getProperty("maven.username")
         ?: System.getenv("MAVEN_USERNAME")
         ?: throw IllegalStateException("'maven.username' is not defined in local.properties!")
-    val mavenPassword = localProperties.getProperty("maven.password")
+    val mavenPassword = localProperties?.getProperty("maven.password")
         ?: System.getenv("MAVEN_PASSWORD")
         ?: throw IllegalStateException("'maven.password' is not defined in local.properties!")
     repositories {
