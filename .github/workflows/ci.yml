@@ -18,8 +18,8 @@ permissions:
   contents: write
 
 defaults:
-    run:
-      working-directory: ./kotlin-tree-sitter
+  run:
+    working-directory: ./kotlin-tree-sitter
 
 jobs:
   generate:
