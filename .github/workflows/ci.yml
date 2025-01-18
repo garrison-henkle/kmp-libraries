@@ -199,6 +199,9 @@ jobs:
       - name: Build packages
         run: ./gradlew --no-daemon ${{matrix.targets}}
         env:
+          MAVEN_URL: ${{ secrets.MAVEN_URL }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
           KONAN_DATA_DIR: ${{runner.tool_cache}}/konan
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
