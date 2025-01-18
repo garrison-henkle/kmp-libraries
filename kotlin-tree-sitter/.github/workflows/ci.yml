@@ -9,11 +9,6 @@ on:
       - "**/jni/*"
       - gradle/**
   pull_request:
-    paths:
-      - "/*.kt"
-      - "**/*.kts"
-      - "**/jni/*"
-      - gradle/**
   workflow_dispatch:
 
 concurrency:
