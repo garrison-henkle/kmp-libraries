@@ -612,6 +612,7 @@ fun App() {
         modifier = Modifier
             .background(color = Color.White)
             .padding(all = 5.dp),
+        useLazyColumn = true,
         markdown = text,
         parser = parser,
         linkHandler = { label, url ->
@@ -635,7 +636,7 @@ fun App() {
                     } else {
                         null
                     }
-                } ?: (UIElement.Text(text = AnnotatedString(text = "")) to false)
+                } ?: (UIElement.Text(id = Int.MAX_VALUE.toString(), text = AnnotatedString(text = "")) to false)
 
                 if (isCitation) {
                     MarkdownLink(
