@@ -41,14 +41,15 @@ proper way of developing with branches and PRs anytime soon.
 
 That being said, I want some of these libraries to be production ready in the future. To that end,
 I'm going to try to do the following moving forward to make this repo less of a mess (last updated 1/5/24):
-[ ] a `main` branch will be created with any releases, and only functioning code will be pushed to that branch after it is created
-[ ] GitHub releases for each new library version
-[ ] my "stream of consciousness" coding of random commits to random libraries whenever I feel like it will occur in a new `dev` branch
-[ ] for libraries that I have given the status "production ready" in the table above, I'll make proper branches and PRs for all updates
-[ ] start uploading new release to maven central
- - all releases are currently sent out to my personal private maven repository, so it's hard for anyone but me to use anything in this repo
-[ ] simple CI/CD for publishing all of the libraries using GitHub Actions
-[ ] revamp of the convention plugins so they can be published
+
+- [ ] a `main` branch will be created with any releases, and only functioning code will be pushed to that branch after it is created
+- [ ] GitHub releases for each new library version
+- [ ] my "stream of consciousness" coding of random commits to random libraries whenever I feel like it will occur in a new `dev` branch
+- [ ] for libraries that I have given the status "production ready" in the table above, I'll make proper branches and PRs for all updates
+- [ ] start uploading new release to maven central
+  - all releases are currently sent out to my personal private maven repository, so it's hard for anyone but me to use anything in this repo
+- [ ] simple CI/CD for publishing all of the libraries using GitHub Actions
+- [ ] revamp of the convention plugins so they can be published
 
 # License
 

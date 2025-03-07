@@ -1,20 +1,16 @@
 package dev.henkle.markdown.ui.demo
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -35,7 +31,6 @@ import dev.henkle.markdown.ui.model.UIElement
 import dev.henkle.markdown.ui.utils.LocalMarkdownStyle
 import dev.henkle.markdown.ui.utils.ext.getText
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 
 private val nonMathDollarSignRegex = "(?<!\$|\\\\)\\$(?=\\s?\\d)".toRegex()
 
@@ -495,7 +490,7 @@ private const val INLINE_MATH_DELIMITER = "$"
  *         - Properly delimited markdown math blocks e.g. `$$`
  *         - Dollar signs followed by a number (which is usually a price) e.g. `$1.00` or `$ 1.00`
  */
-private fun String.preprocessMarkdown(): String =
+fun String.preprocessMarkdown(): String =
     StringBuilder(length).apply {
         val input = this@preprocessMarkdown
         var i = 0
@@ -595,7 +590,7 @@ private val BUG = """
 """.trimIndent().preprocessMarkdown()
 
 @Stable
-data class TextToken(val text: String)
+private data class TextToken(val text: String)
 
 @Composable
 fun App() {
