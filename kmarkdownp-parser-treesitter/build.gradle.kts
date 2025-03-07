@@ -42,7 +42,7 @@ kotlin {
         commonMain.dependencies {
             compileOnly(projects.kmarkdownp)
             api(projects.kmarkdownp)
-            implementation(libs.tree.sitter)
+//            implementation(libs.tree.sitter)
         }
     }
 }
