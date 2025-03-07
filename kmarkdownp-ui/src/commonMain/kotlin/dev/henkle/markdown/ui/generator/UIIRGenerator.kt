@@ -8,16 +8,12 @@ import androidx.compose.ui.text.font.FontWeight
 import dev.henkle.markdown.model.MarkdownNode
 import dev.henkle.markdown.ui.model.InlineUIElement
 import dev.henkle.markdown.ui.model.UIElement
-import kotlinx.atomicfu.atomic
 
 typealias Url = String
 typealias Label = String
 
 class UIIRGenerator {
-    private val idCounter = atomic(initial = 0)
-    private fun getId(): String = idCounter.getAndIncrement().toString()
-
-    fun process(nodes: List<MarkdownNode>): IRGenerationResult {
+    fun process(nodes: List<MarkdownNode>, root: Boolean = true): IRGenerationResult {
         val elements = mutableListOf<UIElement>()
         val inlineContent = mutableListOf<InlineUIElement>()
         val urls = mutableMapOf<Label, Url>()
@@ -37,17 +33,16 @@ class UIIRGenerator {
 
                 is MarkdownNode.LinkDefinition -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    val labelResult = process(nodes = node.label)
+                    val labelResult = process(nodes = node.label, root = false)
                     urls += labelResult.urls
                     inlineContent += labelResult.inlineContent
                     val titleElements = node.title?.let { titleNodes ->
-                        val titleResult = process(nodes = titleNodes)
+                        val titleResult = process(nodes = titleNodes, root = false)
                         urls += titleResult.urls
                         inlineContent += titleResult.inlineContent
                         titleResult.elements
                     }
                     elements += UIElement.LinkDefinition(
-                        id = getId(),
                         labelRaw = node.labelRaw,
                         label = labelResult.elements,
                         url = node.url,
@@ -56,91 +51,90 @@ class UIIRGenerator {
                 }
                 is MarkdownNode.Divider -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    elements += UIElement.Divider(id = getId())
+                    elements += UIElement.Divider
                 }
                 is MarkdownNode.Blockquote -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    val result = process(nodes = node.content)
+                    val result = process(nodes = node.content, root = false)
                     urls += result.urls
                     inlineContent += result.inlineContent
-                    elements += UIElement.Blockquote(id = getId(), elements = result.elements)
+                    elements += UIElement.Blockquote(elements = result.elements)
                 }
                 is MarkdownNode.CodeBlock -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    elements += UIElement.CodeBlock(id = getId(), code = node.code, language = node.language)
+                    elements += UIElement.CodeBlock(code = node.code, language = node.language)
                 }
                 is MarkdownNode.HTMLBlock -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    elements += UIElement.CodeBlock(id = getId(), code = node.html, language = "html")
+                    elements += UIElement.CodeBlock(code = node.html, language = "html")
                 }
                 is MarkdownNode.MathBlock -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    elements += UIElement.MathBlock(id = getId(), equation = node.equation)
+                    elements += UIElement.MathBlock(equation = node.equation)
                 }
                 is MarkdownNode.LineBreak -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    elements += UIElement.LineBreak(id = getId(), newlineCount = node.raw.length)
+                    elements += UIElement.LineBreak(newlineCount = node.raw.length)
                 }
                 is MarkdownNode.H1 -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    val result = process(nodes = node.content)
+                    val result = process(nodes = node.content, root = false)
                     urls += result.urls
                     inlineContent += result.inlineContent
-                    elements += UIElement.H1(id = getId(), elements = result.elements)
+                    elements += UIElement.H1(elements = result.elements)
                 }
                 is MarkdownNode.H2 -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    val result = process(nodes = node.content)
+                    val result = process(nodes = node.content, root = false)
                     urls += result.urls
                     inlineContent += result.inlineContent
-                    elements += UIElement.H2(id = getId(), elements = result.elements)
+                    elements += UIElement.H2(elements = result.elements)
                 }
                 is MarkdownNode.H3 -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    val result = process(nodes = node.content)
+                    val result = process(nodes = node.content, root = false)
                     urls += result.urls
                     inlineContent += result.inlineContent
-                    elements += UIElement.H3(id = getId(), elements = result.elements)
+                    elements += UIElement.H3(elements = result.elements)
                 }
                 is MarkdownNode.H4 -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    val result = process(nodes = node.content)
+                    val result = process(nodes = node.content, root = false)
                     urls += result.urls
                     inlineContent += result.inlineContent
-                    elements += UIElement.H4(id = getId(), elements = result.elements)
+                    elements += UIElement.H4(elements = result.elements)
                 }
                 is MarkdownNode.H5 -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    val result = process(nodes = node.content)
+                    val result = process(nodes = node.content, root = false)
                     urls += result.urls
                     inlineContent += result.inlineContent
-                    elements += UIElement.H5(id = getId(), elements = result.elements)
+                    elements += UIElement.H5(elements = result.elements)
                 }
                 is MarkdownNode.H6 -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    val result = process(nodes = node.content)
+                    val result = process(nodes = node.content, root = false)
                     urls += result.urls
                     inlineContent += result.inlineContent
-                    elements += UIElement.H6(id = getId(), elements = result.elements)
+                    elements += UIElement.H6(elements = result.elements)
                 }
                 is MarkdownNode.SETextH1 -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    val result = process(nodes = node.content)
+                    val result = process(nodes = node.content, root = false)
                     urls += result.urls
                     inlineContent += result.inlineContent
-                    elements += UIElement.SETextH1(id = getId(), elements = result.elements)
+                    elements += UIElement.SETextH1(elements = result.elements)
                 }
                 is MarkdownNode.SETextH2 -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
-                    val result = process(nodes = node.content)
+                    val result = process(nodes = node.content, root = false)
                     urls += result.urls
                     inlineContent += result.inlineContent
-                    elements += UIElement.SETextH2(id = getId(), elements = result.elements)
+                    elements += UIElement.SETextH2(elements = result.elements)
                 }
                 is MarkdownNode.Image -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
                     elements += UIElement.Image(
-                        id = getId(),
                         label = buildAnnotatedString(
                             nodes = node.label,
                             inlineContent = inlineContent,
@@ -153,9 +147,8 @@ class UIIRGenerator {
                 is MarkdownNode.BulletedList -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
                     elements += UIElement.BulletedList(
-                        id = getId(),
                         items = node.items.map { item ->
-                            val result = process(nodes = item.content)
+                            val result = process(nodes = item.content, root = false)
                             urls += result.urls
                             inlineContent += result.inlineContent
                             UIElement.BulletedList.Item(
@@ -168,9 +161,8 @@ class UIIRGenerator {
                 is MarkdownNode.NumberedList -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
                     elements += UIElement.NumberedList(
-                        id = getId(),
                         items = node.items.map { item ->
-                            val result = process(nodes = item.content)
+                            val result = process(nodes = item.content, root = false)
                             urls += result.urls
                             inlineContent += result.inlineContent
                             UIElement.NumberedList.Item(
@@ -184,7 +176,6 @@ class UIIRGenerator {
                 is MarkdownNode.Table -> {
                     onNonTextNode(nodes, elements, inlineContent, urls, i, annotatedStringStart, setAnnotatedStringStart)
                     elements += UIElement.Table(
-                        id = getId(),
                         columns = node.columns.map {
                             UIElement.Table.Column(
                                 alignment = when (it.alignment) {
@@ -196,7 +187,7 @@ class UIIRGenerator {
                         },
                         cells = node.cells.map { row ->
                             row.map { cell ->
-                                val result = process(nodes = cell.content)
+                                val result = process(nodes = cell.content, root = false)
                                 urls += result.urls
                                 inlineContent += result.inlineContent
                                 UIElement.Table.Cell(content = result.elements)
@@ -214,8 +205,12 @@ class UIIRGenerator {
                 urls = urls,
                 range = start..<nodes.size,
             )
-            elements += UIElement.Text(id = getId(), text = text)
+            elements += UIElement.Text(text = text)
         }
+//        if (root) {
+//            println("inline content ids: ${inlineContent.map { it.id }}")
+//            println("urls: $urls")
+//        }
         return IRGenerationResult(
             elements = elements,
             inlineContent = inlineContent,
@@ -239,7 +234,7 @@ class UIIRGenerator {
                 urls = urls,
                 range = annotatedStringStart..<i,
             )
-            elements += UIElement.Text(id = getId(), text = text)
+            elements += UIElement.Text(text = text)
             setAnnotatedStringStart(null)
         }
     }
@@ -282,27 +277,26 @@ class UIIRGenerator {
                     builder.append(text = node.html)
                 }
                 is MarkdownNode.InlineCode -> {
-                    val element = InlineUIElement.Code(id = getId(), code = node.code)
+                    val element = InlineUIElement.Code(code = node.code)
                     inlineContent += element
                     builder.appendInlineContent(id = element.id)
 
                 }
                 is MarkdownNode.InlineMath -> {
                     // TODO(garrison)
-                    val element = InlineUIElement.Math(id = getId(), equation = node.equation)
+                    val element = InlineUIElement.Math(equation = node.equation)
                     inlineContent += element
                     builder.appendInlineContent(id = element.id)
                 }
                 is MarkdownNode.InlineLink -> {
-                    val labelResult = process(nodes = node.label)
+                    val labelResult = process(nodes = node.label, root = false)
                     urls += labelResult.urls
                     inlineContent += labelResult.inlineContent
                     val element = InlineUIElement.Link(
-                        id = getId(),
                         labelRaw = node.labelRaw,
                         label = labelResult.elements,
                         title = node.title?.let { title ->
-                            listOf(UIElement.Text(id = getId(), text = AnnotatedString(text = title)))
+                            listOf(UIElement.Text(text = AnnotatedString(text = title)))
                         },
                     )
                     inlineContent += element
@@ -310,15 +304,14 @@ class UIIRGenerator {
                     builder.appendInlineContent(id = element.id)
                 }
                 is MarkdownNode.LinkReference -> {
-                    val labelResult = process(nodes = node.label)
+                    val labelResult = process(nodes = node.label, root = false)
                     urls += labelResult.urls
                     inlineContent += labelResult.inlineContent
                     val element = InlineUIElement.Link(
-                        id = getId(),
                         labelRaw = node.labelRaw,
                         label = labelResult.elements,
                         title = node.title?.let { titleNodes ->
-                            val result = process(nodes = titleNodes)
+                            val result = process(nodes = titleNodes, root = false)
                             urls += result.urls
                             inlineContent += result.inlineContent
                             result.elements
