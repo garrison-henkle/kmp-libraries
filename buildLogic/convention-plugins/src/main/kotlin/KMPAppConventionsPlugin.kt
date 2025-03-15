@@ -6,6 +6,7 @@ import dev.henkle.conventions.getJavaVersion
 import dev.henkle.conventions.getStringProperty
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.internal.component.external.descriptor.MavenScope.System
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.get
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -16,6 +17,7 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+import kotlin.IllegalStateException
 
 class KMPAppConventionsPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -102,9 +104,6 @@ class KMPAppConventionsPlugin : Plugin<Project> {
                             kotlinOptions {
                                 jvmTarget = getStringProperty(name = "java.version")
                             }
-                        }
-                        (project.extensions.findByName("android") as BaseAppModuleExtension).applicationVariants.forEach {
-                            System.err.println("Found variant: ${it.name}")
                         }
                     }
                     if (androidConfiguration != null) {
