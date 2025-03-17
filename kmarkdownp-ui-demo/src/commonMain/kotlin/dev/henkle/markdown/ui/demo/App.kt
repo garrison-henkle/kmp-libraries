@@ -1,24 +1,7 @@
 package dev.henkle.markdown.ui.demo
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.FlowRowOverflow
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,32 +11,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ParagraphStyle
-import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.style.LineBreak
-import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.isUnspecified
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.fastForEach
 import co.touchlab.kermit.Logger
 import com.aallam.ktoken.Encoding
 import com.aallam.ktoken.Tokenizer
@@ -65,19 +34,11 @@ import dev.henkle.markdown.ui.MarkdownUIComponents
 import dev.henkle.markdown.ui.components.shared.MarkdownLink
 import dev.henkle.markdown.ui.model.InlineUIElement
 import dev.henkle.markdown.ui.model.UIElement
-import dev.henkle.markdown.ui.utils.LocalMarkdownInlineContent
 import dev.henkle.markdown.ui.utils.LocalMarkdownStyle
 import dev.henkle.markdown.ui.utils.ext.getText
 import kmp.kmarkdownp_ui_demo.generated.resources.Res
 import kmp.kmarkdownp_ui_demo.generated.resources.inter_regular
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.NonCancellable.start
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
-import kotlin.text.appendLine
 
 private val nonMathDollarSignRegex = "(?<!\$|\\\\)\\$(?=\\s?\\d)".toRegex()
 
@@ -697,12 +658,17 @@ fun App() {
         }
     }
 
-    RealApp(modifier = modifier, style = style)
+    AppContent(
+        modifier = modifier,
+        markdown = LATEX_BUG_FULL,
+        style = style,
+    )
 }
 
 @Composable
-private fun RealApp(
+private fun AppContent(
     modifier: Modifier = Modifier,
+    markdown: String,
     style: TextStyle,
 ) {
     val parser = remember { KMarkdownPUI(markdownParser = JetbrainsParser()) }
@@ -714,7 +680,7 @@ private fun RealApp(
     }
     LaunchedEffect(Unit) {
         val tokenizer = Tokenizer.of(encoding = Encoding.CL100K_BASE)
-        val tokens = tokenizer.encode(text = LATEX_BUG).map { tokenizer.decode(it) }
+        val tokens = tokenizer.encode(text = markdown).map { tokenizer.decode(it) }
         tokens.forEach { token ->
             textState += TextToken(text = token)
             delay(timeMillis = 25)
@@ -731,11 +697,6 @@ private fun RealApp(
         style = MarkdownStyle(text = style),
         spacing = 10.dp,
         components = MarkdownUIComponents(
-            text = { element ->
-                val style = LocalMarkdownStyle.current.text
-                val inlineContent = LocalMarkdownInlineContent.current
-                DynamicLineHeightText(text = element.text, style = style, inlineContent = inlineContent)
-            },
             inlineMath = { element -> LatexView(modifier = Modifier.padding(top = 4.dp), text = element.equation, fontSize = 16.sp) },
             mathBlock = { element -> LatexView(text = element.equation, fontSize = 16.sp) },
             inlineLink = { element ->
