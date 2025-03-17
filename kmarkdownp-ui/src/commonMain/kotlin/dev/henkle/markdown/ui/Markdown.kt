@@ -94,7 +94,6 @@ fun Markdown(
                             }
                             ProvideMarkdownInlineContent(inlineContent = inlineContent) {
                                 MarkdownContent(
-                                    modifier = modifier,
                                     elements = markdown.elements,
                                     useLazyColumn = useLazyColumn,
                                     spacing = spacing,
@@ -144,7 +143,6 @@ fun LazyListScope.Markdown(
                             }
                             ProvideMarkdownInlineContent(inlineContent = inlineContent) {
                                 MarkdownContent(
-                                    modifier = modifier,
                                     elements = markdown.elements,
                                     spacing = spacing,
                                 )

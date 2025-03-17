@@ -9,26 +9,35 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import co.touchlab.kermit.Logger
 import com.aallam.ktoken.Encoding
 import com.aallam.ktoken.Tokenizer
 import dev.henkle.markdown.parser.jetbrains.JetbrainsParser
 import dev.henkle.markdown.ui.KMarkdownPUI
 import dev.henkle.markdown.ui.Markdown
+import dev.henkle.markdown.ui.MarkdownStyle
 import dev.henkle.markdown.ui.MarkdownUIComponents
 import dev.henkle.markdown.ui.components.shared.MarkdownLink
 import dev.henkle.markdown.ui.model.InlineUIElement
 import dev.henkle.markdown.ui.model.UIElement
 import dev.henkle.markdown.ui.utils.LocalMarkdownStyle
 import dev.henkle.markdown.ui.utils.ext.getText
+import kmp.kmarkdownp_ui_demo.generated.resources.Res
+import kmp.kmarkdownp_ui_demo.generated.resources.inter_regular
 import kotlinx.coroutines.delay
 
 private val nonMathDollarSignRegex = "(?<!\$|\\\\)\\$(?=\\s?\\d)".toRegex()
@@ -588,11 +597,80 @@ private val BUG = """
     Altana raised **$100 million in a Series B round** in 2022.
 """.trimIndent().preprocessMarkdown()
 
+private val LATEX_BUG_FULL = """
+    Here is the LaTeX code to write \( \frac{x^3}{y} \) 20 times on multiple lines in a row. I’ll use the `align*` environment to ensure proper formatting across multiple lines:
+    ```latex
+    \documentclass{article}
+    \usepackage{amsmath}
+    \begin{document}
+    \begin{align*}
+    \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y} \\
+    \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y} \\
+    \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y} \\
+    \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y} & \quad \frac{x^3}{y}
+    \end{align*}
+    \end{document}
+    ```
+    ### Explanation:
+    1. **Environment**: The `align*` environment is used to align equations neatly across multiple lines without numbering them.
+    2. **Spacing**: The `\quad` command adds horizontal spacing between each instance of \( \frac{x^3}{y} \).
+    3. **Rows**: Each row contains 5 instances of \( \frac{x^3}{y} \), and there are 4 rows in total, making 20 instances.
+""".trimIndent().preprocessMarkdown()
+
+private val LATEX_BUG = """
+    1. **Environment**: The `align*` environment is used to align equations neatly across multiple lines without numbering them.
+    2. **Spacing**: The `\quad` command adds horizontal spacing between each instance of \( \frac{x^3}{y} \).
+    3. **Rows**: Each row contains 5 instances of \( \frac{x^3}{y} \), and there are 4 rows in total, making 20 instances.
+""".trimIndent().preprocessMarkdown()
+
 @Stable
 private data class TextToken(val text: String)
 
 @Composable
 fun App() {
+    val font = org.jetbrains.compose.resources.Font(resource = Res.font.inter_regular, weight = FontWeight.Normal)
+    val fontFamily = remember(font) { FontFamily(font) }
+    val modifier = remember {
+        Modifier
+            .background(color = Color.White)
+            .padding(
+                horizontal = 16.dp,
+                vertical = 32.dp,
+            )
+    }
+    val style = remember(fontFamily) {
+        TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontFamily = fontFamily,
+        )
+    }
+
+    var tempText by remember { mutableStateOf("") }
+    var temptAnnotatedString by remember { mutableStateOf(AnnotatedString("")) }
+    LaunchedEffect(Unit) {
+        var i = 0
+        while (true) {
+            i++
+            delay(timeMillis = 1_000L)
+            tempText += i.toString()
+            temptAnnotatedString = AnnotatedString(text = tempText)
+        }
+    }
+
+    AppContent(
+        modifier = modifier,
+        markdown = LATEX_BUG_FULL,
+        style = style,
+    )
+}
+
+@Composable
+private fun AppContent(
+    modifier: Modifier = Modifier,
+    markdown: String,
+    style: TextStyle,
+) {
     val parser = remember { KMarkdownPUI(markdownParser = JetbrainsParser()) }
     val textState = remember { mutableStateListOf<TextToken>() }
     val text by remember {
@@ -602,26 +680,25 @@ fun App() {
     }
     LaunchedEffect(Unit) {
         val tokenizer = Tokenizer.of(encoding = Encoding.CL100K_BASE)
-        val tokens = tokenizer.encode(text = EX_MARKDOWN_2).map { tokenizer.decode(it) }
+        val tokens = tokenizer.encode(text = markdown).map { tokenizer.decode(it) }
         tokens.forEach { token ->
             textState += TextToken(text = token)
             delay(timeMillis = 25)
         }
     }
     Markdown(
-        modifier = Modifier
-            .background(color = Color.White)
-            .padding(all = 5.dp),
+        modifier = modifier,
         useLazyColumn = true,
         markdown = text,
         parser = parser,
         linkHandler = { label, url ->
             Logger.e("KMarkdownP Demo") { "Clicked on url labeled '$label': '$url'" }
         },
+        style = MarkdownStyle(text = style),
         spacing = 10.dp,
         components = MarkdownUIComponents(
-            inlineMath = { element -> LatexView(text = element.equation) },
-            mathBlock = { element -> LatexView(text = element.equation) },
+            inlineMath = { element -> LatexView(modifier = Modifier.padding(top = 4.dp), text = element.equation, fontSize = 16.sp) },
+            mathBlock = { element -> LatexView(text = element.equation, fontSize = 16.sp) },
             inlineLink = { element ->
                 val (processedLabel, isCitation) = element.label.firstOrNull()?.let { labelElement ->
                     // We need to strip the enclosing brackets that the BE sends. These are always in Text elements
@@ -683,3 +760,4 @@ fun App() {
 }
 
 private val bracketRegex = """\[(.+)]""".toRegex()
+

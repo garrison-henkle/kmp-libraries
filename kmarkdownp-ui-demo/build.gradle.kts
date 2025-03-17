@@ -43,6 +43,7 @@ kotlin {
             implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.components.resources)
             implementation(libs.kermit)
             implementation(libs.ktoken)
             implementation(projects.kmarkdownpUi)
@@ -61,6 +62,13 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs.ktor.client.engine.darwin)
+        }
+    }
+}
+android {
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }

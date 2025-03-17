@@ -18,7 +18,18 @@ KMPLibraryConventionsPlugin.defaultConfiguration(
 kotlin {
     applyDefaultHierarchyTemplate()
     sourceSets {
+        val nativeMain by getting
+        val commonMain by getting
         val desktopMain by getting
+        val wasmJsMain by getting
+
+        val skikoMain by creating {
+            dependsOn(commonMain)
+            nativeMain.dependsOn(this)
+            desktopMain.dependsOn(this)
+            wasmJsMain.dependsOn(this)
+        }
+
         commonMain.dependencies {
             implementation(compose.foundation)
             implementation(compose.material)
