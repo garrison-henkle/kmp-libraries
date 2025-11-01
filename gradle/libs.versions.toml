@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.3"
+agp = "8.13.0"
 # commit hash of the latet
 #android-math = "master-5e0f60bac9daaefbab7df96f4501c0209700418b"
 android-math = "1.0.0"
@@ -16,18 +16,15 @@ androidx-espresso-core = "3.6.1"
 androidx-material = "1.12.0"
 androidx-security-crypto = "1.0.0"
 androidx-test-junit = "1.2.1"
-bignum = "0.3.9"
-buildkonfig = "0.15.1"
+bignum = "0.3.10"
+buildkonfig = "0.17.1"
 cachemap = "0.2.4"
 cklib = "0.3.3"
-coil = "3.0.3"
-#coil = "3.0.0-alpha10"
-compose = "1.7.3"
-#compose = "1.6.11"
+coil = "3.3.0"
+compose = "1.9.2"
 # below must stay in sync with the value of compose above. Check compose-multiplatform's releases on GitHub to see the
 # correct value for each Compose Multiplatform version
-compose-jetpack = "1.7.6"
-#compose-jetpack = "1.6.7"
+compose-jetpack = "1.9.3"
 conventions = "1.0.0"
 credential-secure-storage = "1.0.0"
 google-play-billing = "7.0.0"
@@ -37,20 +34,18 @@ haze = "0.7.1"
 jetbrains-markdown = "0.7.3"
 jvm-native-lib-loader = "2.5.0"
 junit = "4.13.2"
-kermit = "2.0.4"
-kotest = "6.0.0.M1"
-kotlin = "2.1.10"
-#kotlin = "2.0.21"
-kotlinx-atomic-fu = "0.27.0"
-kotlinx-browser = "0.2"
-kotlinx-coroutines = "1.10.1"
-kotlinx-datetime = "0.6.1"
-kotlinx-rpc = "0.2.4"
-kotlinx-serialization = "1.8.0"
+kermit = "2.0.8"
+kotest = "6.0.4"
+kotlin = "2.2.20"
+kotlinx-atomic-fu = "0.29.0"
+kotlinx-browser = "0.5.0"
+kotlinx-coroutines = "1.10.2"
+kotlinx-datetime = "0.7.1"
+kotlinx-rpc = "0.10.0"
+kotlinx-serialization = "1.9.0"
 ktoken = "0.4.0"
-ktor = "3.1.0"
-lazy-table = "1.9.0-beta01"
-#lazy-table = "1.8.0"
+ktor = "3.3.1"
+lazy-table = "1.10.0"
 listenable-futures-workaround = "9999.0-empty-to-avoid-conflict-with-guava"
 logback = "1.5.16"
 maven-publish = "0.28.0"
@@ -58,7 +53,6 @@ secure-random = "0.3.2"
 swift-klib = "0.5.1"
 tree-sitter = "0.24.0"
 ua-parser-js = "1.0.37"
-uuid = "0.8.4"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -95,7 +89,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 kotlinx-atomic-fu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlinx-atomic-fu" }
 kotlinx-atomic-fu-plugin = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "kotlinx-atomic-fu" }
-kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser-wasm-js", version.ref = "kotlinx-browser" }
+kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines"}
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines"}
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
@@ -118,7 +112,6 @@ listenable-futures = { module = "com.google.guava:listenablefuture", version.ref
 logback = { module = "ch.qos.logback:logback-classic", version.ref="logback" }
 secure-random = { module = "org.kotlincrypto:secure-random", version.ref = "secure-random" }
 tree-sitter = { module = "io.github.tree-sitter:ktreesitter", version.ref = "tree-sitter" }
-uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

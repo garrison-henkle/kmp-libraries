@@ -28,11 +28,7 @@ kotlin {
             androidMain.dependsOn(this)
             jvmMain.dependsOn(this)
         }
-        val webMain by creating {
-            dependsOn(commonMain)
-            jsMain.dependsOn(this)
-            wasmJsMain.dependsOn(this)
-        }
+        val webMain by getting
 
         commonMain.dependencies {
             implementation(libs.kotlin.test)

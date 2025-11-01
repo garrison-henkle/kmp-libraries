@@ -1,5 +1,6 @@
 package dev.henkle.surreal.internal.model
 
+import co.touchlab.kermit.Logger
 import dev.henkle.surreal.internal.utils.ext.encodeToJsonObjWithoutId
 import dev.henkle.surreal.internal.utils.nullSerializer
 import dev.henkle.surreal.types.SurrealIdentifiable
@@ -8,18 +9,23 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.serializer
 
+@Serializable(with = RPCParams.Serializer::class)
 internal sealed interface RPCParams<T> {
     /**
      * An RPC request that requires no parameters
      */
+    @Serializable
     class None<T> : RPCParams<T>
 
     /**
@@ -124,6 +130,42 @@ internal sealed interface RPCParams<T> {
             override fun deserialize(decoder: Decoder): Relation<R> {
                 throw NotImplementedError(message = "Deserialization of RPCParams is not allowed!")
             }
+        }
+    }
+
+    class Serializer<R: SurrealRecord<R>>(private val genericTypeSerializer: KSerializer<R>) : KSerializer<RPCParams<R>> {
+        override val descriptor: SerialDescriptor = buildClassSerialDescriptor(serialName = "RPCParams")
+
+        override fun serialize(encoder: Encoder, value: RPCParams<R>) {
+            when (value) {
+                is StringWithData ->
+                    encoder.encodeSerializableValue(
+                        serializer = StringWithData.serializer(typeSerial0 = genericTypeSerializer),
+                        value = value,
+                    )
+
+                is DataList ->
+                    encoder.encodeSerializableValue(
+                        serializer = DataList.serializer(typeSerial0 = genericTypeSerializer),
+                        value = value,
+                    )
+
+                is None ->
+                    encoder.encodeSerializableValue(
+                        serializer = None.serializer(typeSerial0 = genericTypeSerializer),
+                        value = value,
+                    )
+
+                is Relation ->
+                    encoder.encodeSerializableValue(
+                        serializer = Relation.serializer(typeSerial0 = genericTypeSerializer),
+                        value = value,
+                    )
+            }
+        }
+
+        override fun deserialize(decoder: Decoder): RPCParams<R> {
+            throw NotImplementedError(message = "Deserialization of RPCParams is not allowed!")
         }
     }
 }

@@ -16,7 +16,4 @@ KMPLibraryConventionsPlugin.defaultConfiguration(
 
 kotlin {
     applyDefaultHierarchyTemplate()
-    sourceSets {
-        val nativeMain by getting
-    }
 }

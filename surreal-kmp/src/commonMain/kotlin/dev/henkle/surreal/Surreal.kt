@@ -2,6 +2,7 @@ package dev.henkle.surreal
 
 import dev.henkle.surreal.internal.impl.SurrealImpl
 import dev.henkle.surreal.sdk.RawSurrealQueryResult
+import dev.henkle.surreal.sdk.SurrealConfig
 import dev.henkle.surreal.sdk.SurrealConnection
 import dev.henkle.surreal.sdk.SurrealLiveQueryHandle
 import dev.henkle.surreal.sdk.SurrealLiveQueryResponse
@@ -252,10 +253,13 @@ interface Surreal {
             url: String,
             port: Int = 8000,
             requestBuilder: HttpRequestBuilder.() -> Unit = {},
+            configure: SurrealConfig.() -> Unit = {},
             onConnect: suspend Surreal.() -> Unit,
         ): Surreal = SurrealImpl.create(
             url = url,
             port = port,
+            requestBuilder = requestBuilder,
+            configure = configure,
             onConnect = onConnect,
         )
 
@@ -263,10 +267,13 @@ interface Surreal {
             url: String,
             port: Int = 8000,
             requestBuilder: HttpRequestBuilder.() -> Unit = {},
+            configure: SurrealConfig.() -> Unit = {},
             connection: SurrealConnection,
         ): Surreal = SurrealImpl.create(
             url = url,
             port = port,
+            requestBuilder = requestBuilder,
+            configure = configure,
             connection = connection,
         )
     }

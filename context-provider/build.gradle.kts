@@ -1,5 +1,6 @@
 
 import dev.henkle.utils.getStringProperty
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.conventionsAndroidLibrary)
@@ -11,12 +12,12 @@ group = getStringProperty(name = "group.id")
 version = getStringProperty(name = "context.version.name")
 
 kotlin {
+    // todo(garrison)
+//    compilerOptions {
+//        jvmTarget.set(JvmTarget.JVM_21)
+//    }
+
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = getStringProperty(name = "java.version")
-            }
-        }
         publishLibraryVariants("release")
     }
 }

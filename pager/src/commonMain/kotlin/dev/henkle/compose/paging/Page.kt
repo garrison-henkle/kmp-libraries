@@ -1,6 +1,6 @@
 package dev.henkle.compose.paging
 
-import com.benasher44.uuid.uuid4
+import kotlin.uuid.Uuid
 
 sealed interface Page<T> {
     val page: Int
@@ -13,7 +13,7 @@ sealed interface Page<T> {
     fun copyWithNewID(data: List<T>, size: Int = data.size): Page<T>
 
     data class OffsetPage<T>(
-        val uuid: String = uuid4().toString(),
+        val uuid: String = Uuid.random().toString(),
         override val page: Int,
         val offset: Int,
         override val size: Int,
@@ -45,7 +45,7 @@ sealed interface Page<T> {
 
         override fun copyWithNewID(data: List<T>, size: Int): Page<T> =
             OffsetPage(
-                uuid = uuid4().toString(),
+                uuid = Uuid.random().toString(),
                 page = this.page,
                 offset = this.offset,
                 size = size,
@@ -54,7 +54,7 @@ sealed interface Page<T> {
     }
 
     data class IDPage<T, ID>(
-        val uuid: String = uuid4().toString(),
+        val uuid: String = Uuid.random().toString(),
         override val page: Int,
         val previousPageLastID: ID?,
         override val size: Int,
@@ -86,7 +86,7 @@ sealed interface Page<T> {
 
         override fun copyWithNewID(data: List<T>, size: Int): Page<T> =
             IDPage(
-                uuid = uuid4().toString(),
+                uuid = Uuid.random().toString(),
                 page = this.page,
                 previousPageLastID = this.previousPageLastID,
                 data = data,

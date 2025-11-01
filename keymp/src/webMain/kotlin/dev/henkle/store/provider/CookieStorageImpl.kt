@@ -2,10 +2,10 @@ package dev.henkle.store.provider
 
 import dev.henkle.store.model.cookie.Cookie
 import kotlinx.browser.document
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
 import kotlinx.datetime.plus
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class CookieStorageImpl(private val cookieLifetimeMin: Long) : CookieStorage {
     private val cookieExpiration: Instant

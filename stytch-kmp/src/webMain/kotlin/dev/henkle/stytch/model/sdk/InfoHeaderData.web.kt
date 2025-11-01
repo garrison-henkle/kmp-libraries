@@ -1,22 +1,22 @@
 package dev.henkle.stytch.model.sdk
 
-import com.benasher44.uuid.uuid4
 import dev.henkle.stytch.BuildKonfig
 import dev.henkle.stytch.utils.platform
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.time.Clock
+import kotlin.uuid.Uuid
 
 @Serializable
 internal data class InfoHeaderData(
     val app: App,
     @SerialName(value = "event_id")
-    val eventId: String = "$EVENT_ID_PREFIX${uuid4()}",
+    val eventId: String = "$EVENT_ID_PREFIX${Uuid.random()}",
     @SerialName(value = "app_session_id")
-    val appSessionId: String = "$APP_SESSION_ID_PREFIX${uuid4()}",
+    val appSessionId: String = "$APP_SESSION_ID_PREFIX${Uuid.random()}",
     @SerialName(value = "persistent_id")
-    val persistentId: String = "$PERSISTENT_ID_PREFIX${uuid4()}",
+    val persistentId: String = "$PERSISTENT_ID_PREFIX${Uuid.random()}",
     @SerialName(value = "client_sent_at")
     val clientSentAt: String = Clock.System.now().toString(),
     val timezone: String = TimeZone.currentSystemDefault().id,

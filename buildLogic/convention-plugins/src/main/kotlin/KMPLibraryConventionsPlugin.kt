@@ -2,6 +2,8 @@
 import com.android.build.gradle.LibraryExtension
 import dev.henkle.conventions.configureNative
 import dev.henkle.conventions.getStringProperty
+import dev.henkle.conventions.optIntoExpectActualClasses
+import dev.henkle.conventions.optIntoNewKotlinFeatures
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -134,9 +136,8 @@ class KMPLibraryConventionsPlugin : Plugin<Project> {
                     }
                 }
 
-                compilerOptions {
-                    freeCompilerArgs.add("-Xexpect-actual-classes")
-                }
+                sourceSets.optIntoNewKotlinFeatures()
+                optIntoExpectActualClasses()
             }
 
             with(project.extensions.getByType<LibraryExtension>()) {
