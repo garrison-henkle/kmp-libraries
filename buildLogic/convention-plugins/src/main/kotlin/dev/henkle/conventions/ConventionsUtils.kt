@@ -1,10 +1,13 @@
 package dev.henkle.conventions
 
 import org.gradle.api.JavaVersion
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.getByType
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.util.Properties
 
 @Suppress("FunctionName")
@@ -39,3 +42,15 @@ val Project.configureNative: Boolean get() = localProperties
 
 val Project.libs
     get(): VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
+
+fun NamedDomainObjectContainer<KotlinSourceSet>.optIntoNewKotlinFeatures() {
+    all {
+        languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+        languageSettings.optIn("kotlin.experimental.ExperimentalNativeApi")
+        languageSettings.optIn("kotlin.time.ExperimentalTime")
+    }
+}
+
+fun KotlinMultiplatformExtension.optIntoExpectActualClasses() {
+    compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
+}

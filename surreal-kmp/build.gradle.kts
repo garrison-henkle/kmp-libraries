@@ -36,16 +36,8 @@ kotlin {
             androidUnitTest.dependsOn(this)
             jvmTest.dependsOn(this)
         }
-        val webMain by creating {
-            dependsOn(commonMain)
-            jsMain.dependsOn(this)
-            wasmJsMain.dependsOn(this)
-        }
-        val webTest by creating {
-            dependsOn(commonTest)
-            jsTest.dependsOn(this)
-            wasmJsTest.dependsOn(this)
-        }
+        val webMain by getting
+        val webTest by getting
 
         commonMain.dependencies {
             implementation(libs.kermit)

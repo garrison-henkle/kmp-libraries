@@ -25,6 +25,7 @@ kotlin {
         val jsMain by getting
         val macosMain by getting
         val wasmJsMain by getting
+        val webMain by getting
 
         val jvmMain by creating {
             dependsOn(commonMain)
@@ -46,11 +47,6 @@ kotlin {
             desktopMain.dependsOn(this)
             macosMain.dependsOn(this)
         }
-        val webMain by creating {
-            dependsOn(commonMain)
-            jsMain.dependsOn(this)
-            wasmJsMain.dependsOn(this)
-        }
         val nonAppleMain by creating {
             dependsOn(commonMain)
             jvmMain.dependsOn(this)
@@ -69,7 +65,6 @@ kotlin {
             implementation(libs.ktor.logging)
             implementation(libs.ktor.serialization)
             implementation(libs.secure.random)
-            implementation(libs.uuid)
             implementation(projects.keymp)
         }
 
@@ -93,15 +88,9 @@ kotlin {
             implementation(libs.ktor.server.engine.cio)
         }
 
-        wasmJsMain.dependencies {
-            // https://github.com/Kotlin/kotlinx-browser
-            // this is hosted on my personal maven for now - it's not on mavenCentral
-            // hopefully there will be a version that supports js and wasmJs soon as well...
-            implementation(libs.kotlinx.browser)
-        }
-
         webMain.dependencies {
             implementation(libs.ktor.client.engine.js)
+            implementation(libs.kotlinx.browser)
         }
 
         all {

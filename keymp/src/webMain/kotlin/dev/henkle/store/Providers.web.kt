@@ -1,16 +1,17 @@
 package dev.henkle.store
 
 import dev.henkle.store.provider.CookieStorage
+import dev.henkle.store.provider.CookieStorageImpl
+import dev.henkle.store.provider.LocalStorage
 
 actual fun getPlatformStorageProviders(): PlatformStorageProviders = PlatformStorageProviders()
 
-@Suppress("MemberVisibilityCanBePrivate")
 actual class PlatformStorageProviders() {
-    fun cookieStorage(cookieLifetimeMin: Long = DEFAULT_COOKIE_LIFETIME_MIN) =
-        getCookieStorage(cookieLifetimeMin = cookieLifetimeMin)
+    fun cookieStorage(cookieLifetimeMin: Long = DEFAULT_COOKIE_LIFETIME_MIN): CookieStorage =
+        CookieStorageImpl(cookieLifetimeMin = cookieLifetimeMin)
 
-    val localStorage = getLocalStorage()
-    val defaultCookieStorage = cookieStorage()
+    val localStorage = LocalStorage()
+    val defaultCookieStorage: CookieStorage = cookieStorage()
 
     actual fun getPlatformDefaultStorage(): Storage = localStorage
     actual fun getPlatformSecureStorage(): Storage = defaultCookieStorage
@@ -19,6 +20,3 @@ actual class PlatformStorageProviders() {
         private const val DEFAULT_COOKIE_LIFETIME_MIN = 525_960L // 1 year
     }
 }
-
-internal expect fun getCookieStorage(cookieLifetimeMin: Long): CookieStorage
-internal expect fun getLocalStorage(): Storage

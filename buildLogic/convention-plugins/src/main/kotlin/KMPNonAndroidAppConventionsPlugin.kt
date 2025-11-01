@@ -1,5 +1,7 @@
 import dev.henkle.conventions.configureNative
 import dev.henkle.conventions.getStringProperty
+import dev.henkle.conventions.optIntoExpectActualClasses
+import dev.henkle.conventions.optIntoNewKotlinFeatures
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -108,7 +110,7 @@ class KMPNonAndroidAppConventionsPlugin : Plugin<Project> {
                         if (wasmEnabled) {
                             @OptIn(ExperimentalWasmDsl::class)
                             wasmJs {
-                                this.moduleName = moduleName
+                                outputModuleName.set(moduleName)
                                 browser {
                                     commonWebpackConfig {
                                         outputFileName = webpackOutputFilename
@@ -123,7 +125,7 @@ class KMPNonAndroidAppConventionsPlugin : Plugin<Project> {
 
                         if (jsEnabled) {
                             js(IR) {
-                                this.moduleName = moduleName
+                                outputModuleName.set(moduleName)
                                 browser {
                                     commonWebpackConfig {
                                         outputFileName = webpackOutputFilename
@@ -136,6 +138,9 @@ class KMPNonAndroidAppConventionsPlugin : Plugin<Project> {
                             }
                         }
                     }
+
+                    sourceSets.optIntoNewKotlinFeatures()
+                    optIntoExpectActualClasses()
                 }
             }
         }

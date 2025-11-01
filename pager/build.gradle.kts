@@ -21,7 +21,6 @@ kotlin {
             implementation(libs.kermit)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.atomic.fu)
-            implementation(libs.uuid)
         }
     }
 }

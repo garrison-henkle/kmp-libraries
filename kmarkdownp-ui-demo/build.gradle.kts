@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.conventionsKMPApp)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.jetbrainsCompose)
-    alias(libs.plugins.tree.sitter)
+//    alias(libs.plugins.tree.sitter)
 }
 
 KMPAppConventionsPlugin.defaultConfiguration(
@@ -73,12 +73,12 @@ android {
     }
 }
 
-grammar {
-    baseDir = projectDir.resolve("src/native/markdown")
-    grammarName = project.name
-    className = "TreeSitterMarkdown"
-    packageName = "dev.henkle.markdown.grammars"
-    files = arrayOf(
-        projectDir.resolve("parser.c")
-    )
-}
+//grammar {
+//    baseDir = projectDir.resolve("src/native/markdown")
+//    grammarName = project.name
+//    className = "TreeSitterMarkdown"
+//    packageName = "dev.henkle.markdown.grammars"
+//    files = arrayOf(
+//        projectDir.resolve("parser.c")
+//    )
+//}

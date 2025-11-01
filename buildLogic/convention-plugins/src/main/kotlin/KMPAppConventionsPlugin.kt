@@ -4,6 +4,8 @@ import dev.henkle.conventions.configureNative
 import dev.henkle.conventions.getIntProperty
 import dev.henkle.conventions.getJavaVersion
 import dev.henkle.conventions.getStringProperty
+import dev.henkle.conventions.optIntoExpectActualClasses
+import dev.henkle.conventions.optIntoNewKotlinFeatures
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -98,13 +100,10 @@ class KMPAppConventionsPlugin : Plugin<Project> {
                 }
 
                 project.extensions.configure<KotlinMultiplatformExtension>("kotlin") {
-                    val androidTarget = androidTarget {
-                        compilations.all {
-                            kotlinOptions {
-                                jvmTarget = getStringProperty(name = "java.version")
-                            }
-                        }
-                    }
+                    // todo(garrison)
+//                    compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
+
+                    val androidTarget = androidTarget()
                     if (androidConfiguration != null) {
                         androidTarget.androidConfiguration()
                     }
@@ -178,7 +177,7 @@ class KMPAppConventionsPlugin : Plugin<Project> {
                         if (wasmEnabled) {
                             @OptIn(ExperimentalWasmDsl::class)
                             wasmJs {
-                                this.moduleName = moduleName
+                                outputModuleName.set(moduleName)
                                 browser {
                                     commonWebpackConfig {
                                         outputFileName = webpackOutputFilename
@@ -193,7 +192,7 @@ class KMPAppConventionsPlugin : Plugin<Project> {
 
                         if (jsEnabled) {
                             js(IR) {
-                                this.moduleName = moduleName
+                                outputModuleName.set(moduleName)
                                 browser {
                                     commonWebpackConfig {
                                         outputFileName = webpackOutputFilename
@@ -206,6 +205,9 @@ class KMPAppConventionsPlugin : Plugin<Project> {
                             }
                         }
                     }
+
+                    sourceSets.optIntoNewKotlinFeatures()
+                    optIntoExpectActualClasses()
                 }
             }
         }

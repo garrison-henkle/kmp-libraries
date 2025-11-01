@@ -10,8 +10,10 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -308,6 +310,11 @@ $$
 
 
 [[101]][100]
+""".trim()
+    .replace(regex = """\[(\d+)]""".toRegex()) { match -> match.groupValues[1] }
+
+val AUTOLINK_BUG = """
+    [[1]](https://en.wikipedia.org/wiki/Carthage,_Missouri#:~:text=Carthage). The
 """.trim()
     .replace(regex = """\[(\d+)]""".toRegex()) { match -> match.groupValues[1] }
 
@@ -623,6 +630,25 @@ private val LATEX_BUG = """
     3. **Rows**: Each row contains 5 instances of \( \frac{x^3}{y} \), and there are 4 rows in total, making 20 instances.
 """.trimIndent().preprocessMarkdown()
 
+
+private val TABLE_BUG = """
+    Example:
+    ```markdown
+    | Header 1 | Header 2 |
+    |----------|----------|
+    | Row 1    | Value 1  |
+    | Row 2    | Value 2  |
+    ```
+
+    Rendered:
+    | Header 1 | Header 2 |
+    |----------|----------|
+    | Row 1    | Value 1  |
+    | Row 2    | Value 2  |
+
+    ---
+""".trimIndent()
+
 @Stable
 private data class TextToken(val text: String)
 
@@ -646,21 +672,21 @@ fun App() {
         )
     }
 
-    var tempText by remember { mutableStateOf("") }
-    var temptAnnotatedString by remember { mutableStateOf(AnnotatedString("")) }
-    LaunchedEffect(Unit) {
-        var i = 0
-        while (true) {
-            i++
-            delay(timeMillis = 1_000L)
-            tempText += i.toString()
-            temptAnnotatedString = AnnotatedString(text = tempText)
-        }
-    }
+//    var tempText by remember { mutableStateOf("") }
+//    var temptAnnotatedString by remember { mutableStateOf(AnnotatedString("")) }
+//    LaunchedEffect(Unit) {
+//        var i = 0
+//        while (true) {
+//            i++
+//            delay(timeMillis = 1_000L)
+//            tempText += i.toString()
+//            temptAnnotatedString = AnnotatedString(text = tempText)
+//        }
+//    }
 
     AppContent(
         modifier = modifier,
-        markdown = LATEX_BUG_FULL,
+        markdown = LATEX_BUG,
         style = style,
     )
 }
@@ -673,9 +699,11 @@ private fun AppContent(
 ) {
     val parser = remember { KMarkdownPUI(markdownParser = JetbrainsParser()) }
     val textState = remember { mutableStateListOf<TextToken>() }
-    val text by remember {
-        derivedStateOf {
+    val text by produceState(initialValue = "", key1 = textState) {
+        snapshotFlow {
             textState.joinToString(separator = "") { it.text }
+        }.collect {
+            value = it
         }
     }
     LaunchedEffect(Unit) {

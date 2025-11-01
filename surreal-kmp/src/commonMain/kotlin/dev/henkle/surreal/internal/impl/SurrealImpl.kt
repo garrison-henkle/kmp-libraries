@@ -4,6 +4,7 @@
 package dev.henkle.surreal.internal.impl
 
 import co.touchlab.kermit.Logger
+import co.touchlab.kermit.Severity
 import dev.henkle.surreal.Surreal
 import dev.henkle.surreal.Surreal.ConnectionStatus
 import dev.henkle.surreal.errors.DatabaseError
@@ -32,6 +33,8 @@ import dev.henkle.surreal.internal.utils.stringWithObj
 import dev.henkle.surreal.internal.utils.strings
 import dev.henkle.surreal.sdk.RawSurrealQueryResult
 import dev.henkle.surreal.sdk.RawSurrealStatementResult
+import dev.henkle.surreal.sdk.SurrealConfig
+import dev.henkle.surreal.sdk.SurrealConfig.LogLevel
 import dev.henkle.surreal.sdk.SurrealConnection
 import dev.henkle.surreal.sdk.SurrealLiveQueryHandle
 import dev.henkle.surreal.sdk.SurrealLiveQueryResponse
@@ -681,6 +684,10 @@ internal class SurrealImpl private constructor(
             returnSerializer = returnSerializer,
         )
 
+        Logger.d("SurrealKMP") { "Sending request:\n${(request.params as? RPCParams.StringWithData)?.data}\n${(request.params as? RPCParams.StringWithData)?.string}" }
+
+        Logger.d("SurrealKMP") { "Sending frame: ${json.encodeToString(request)}" }
+
         return try {
             sessionOrThrow
                 .sendSerialized(data = request, typeInfo = typeInfo<RPCRequest<T>>())
@@ -774,18 +781,22 @@ internal class SurrealImpl private constructor(
             port: Int = 8000,
             onConnect: suspend Surreal.() -> Unit = {},
             requestBuilder: HttpRequestBuilder.() -> Unit = {},
+            configure: SurrealConfig.() -> Unit = {},
             client: HttpClient = clientInstance,
             json: Json = nullSerializer,
             context: CoroutineContext = Dispatchers.IO + SupervisorJob(),
-        ): SurrealImpl = SurrealImpl(
-            url = url,
-            port = port,
-            client = client,
-            json = json,
-            context = context,
-            onConnect = onConnect,
-            requestBuilder = requestBuilder,
-        )
+        ): SurrealImpl {
+            configureClient(configure = configure)
+            return SurrealImpl(
+                url = url,
+                port = port,
+                client = client,
+                json = json,
+                context = context,
+                onConnect = onConnect,
+                requestBuilder = requestBuilder,
+            )
+        }
 
         @Throws(SurrealSDKException::class, CancellationException::class)
         internal suspend fun create(
@@ -793,42 +804,61 @@ internal class SurrealImpl private constructor(
             port: Int = 8000,
             connection: SurrealConnection,
             requestBuilder: HttpRequestBuilder.() -> Unit = {},
+            configure: SurrealConfig.() -> Unit = {},
             client: HttpClient = clientInstance,
             json: Json = nullSerializer,
             context: CoroutineContext = Dispatchers.IO + SupervisorJob(),
-        ): SurrealImpl = SurrealImpl(
-            url = url,
-            port = port,
-            client = client,
-            json = json,
-            context = context,
-            onConnect = {
-                signIn(user = connection.user, password = connection.password)
-                    .then {
-                        if (connection.namespace != null) {
-                            query {
-                                +"define namespace if not exists ${connection.namespace}"
-                                +"use ns ${connection.namespace}"
-                                if (connection.database != null) {
-                                    +"define database if not exists ${connection.database}"
-                                    +"use db ${connection.database}"
+        ): SurrealImpl {
+            configureClient(configure = configure)
+            return SurrealImpl(
+                url = url,
+                port = port,
+                client = client,
+                json = json,
+                context = context,
+                onConnect = {
+                    signIn(user = connection.user, password = connection.password)
+                        .then {
+                            if (connection.namespace != null) {
+                                query {
+                                    +"define namespace if not exists ${connection.namespace}"
+                                    +"use ns ${connection.namespace}"
+                                    if (connection.database != null) {
+                                        +"define database if not exists ${connection.database}"
+                                        +"use db ${connection.database}"
+                                    }
+                                    NONE
+                                }.single().then {
+                                    use(namespace = connection.namespace, database = connection.database)
                                 }
-                                NONE
-                            }.single().then {
-                                use(namespace = connection.namespace, database = connection.database)
+                            } else {
+                                SurrealResult.Success(value = Unit)
                             }
-                        } else {
-                            SurrealResult.Success(value = Unit)
                         }
-                    }
-            },
-            requestBuilder = requestBuilder,
-        ).apply {
-            start()
+                },
+                requestBuilder = requestBuilder,
+            ).apply {
+                start()
+            }
         }
 
-        // SurrealDB doesn't really give a good way to distinguish errors from non-errors, so we have to correct some of the incorrectly deserialized
-        // query results. This correction is only possible after the fact because it involves checking the parent's status field.
+        private fun configureClient(configure: SurrealConfig.() -> Unit) {
+            SurrealConfig().apply {
+                configure()
+                Logger.setMinSeverity(
+                    severity = when (logLevel) {
+                        LogLevel.Debug -> Severity.Debug
+                        LogLevel.Info -> Severity.Info
+                        LogLevel.Warn -> Severity.Warn
+                        LogLevel.Error -> Severity.Error
+                    },
+                )
+            }
+        }
+
+        // SurrealDB doesn't really give a good way to distinguish errors from non-errors, so we have to correct some of the incorrectly
+        // deserialized query results. This correction is only possible after the fact because it involves checking the parent's status
+        // field.
         private fun correctSerializationErrors(query: RawQueryResult): RawQueryResult =
             if (query.isOk && query.result is SurrealQueryResultValue.Error) {
                 query.copy(result = SurrealQueryResultValue.Data(data = listOf(query.result.raw)))
