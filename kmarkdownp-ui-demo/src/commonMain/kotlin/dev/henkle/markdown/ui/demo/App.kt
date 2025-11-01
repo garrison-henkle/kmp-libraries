@@ -686,7 +686,7 @@ fun App() {
 
     AppContent(
         modifier = modifier,
-        markdown = EX_MARKDOWN,
+        markdown = LATEX_BUG,
         style = style,
     )
 }
