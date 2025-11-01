@@ -709,7 +709,6 @@ private fun AppContent(
     LaunchedEffect(Unit) {
         val tokenizer = Tokenizer.of(encoding = Encoding.CL100K_BASE)
         val tokens = tokenizer.encode(text = markdown).map { tokenizer.decode(it) }
-        println("tokens (count-${tokens.size}): $tokens")
         tokens.forEach { token ->
             textState += TextToken(text = token)
             delay(timeMillis = 25)
