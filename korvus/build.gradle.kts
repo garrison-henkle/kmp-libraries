@@ -31,13 +31,13 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.logging)
             implementation(libs.ktor.serialization)
-            implementation(projects.nanoid)
+            implementation(project(":nanoid"))
         }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
-            implementation(projects.testUtils)
+            implementation(project(":test-utils"))
         }
 
         androidMain.dependencies {

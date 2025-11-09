@@ -19,7 +19,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
-            implementation(projects.keymp)
+            implementation(project(":keymp"))
         }
     }
 }

@@ -49,15 +49,15 @@ kotlin {
             implementation(libs.ktor.client.sockets)
             implementation(libs.ktor.logging)
             implementation(libs.ktor.serialization)
-            implementation(projects.nanoid)
-            implementation(projects.utils)
+            implementation(project(":nanoid"))
+            implementation(project(":utils"))
         }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
-            implementation(projects.testUtils)
-            implementation(projects.utils)
+            implementation(project(":test-utils"))
+            implementation(project(":utils"))
         }
 
         androidMain.dependencies {

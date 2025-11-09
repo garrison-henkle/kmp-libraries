@@ -4,6 +4,9 @@ import dev.henkle.store.Storage
 import dev.henkle.store.keychain.KeychainClient
 import dev.henkle.store.keychain.KeychainItem
 
+/**
+ * A [Storage] implementation backed by Apple Keychain
+ */
 class KeychainStorage(private val keychain: KeychainClient): Storage {
     override fun get(key: String): String? = keychain.getString(item = KeychainItem(name = key))
 

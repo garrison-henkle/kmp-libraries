@@ -48,6 +48,7 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.optIntoNewKotlinFeatures() {
         languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
         languageSettings.optIn("kotlin.experimental.ExperimentalNativeApi")
         languageSettings.optIn("kotlin.time.ExperimentalTime")
+        languageSettings.optIn("kotlin.concurrent.atomics.ExperimentalAtomicApi")
     }
 }
 

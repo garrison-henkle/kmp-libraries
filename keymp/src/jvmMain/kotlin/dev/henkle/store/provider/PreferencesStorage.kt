@@ -3,6 +3,9 @@ package dev.henkle.store.provider
 import dev.henkle.store.Storage
 import java.util.prefs.Preferences
 
+/**
+ * A [Storage] implementation backed by Java's [Preferences] API
+ */
 class PreferencesStorage : Storage {
     private val preferences = Preferences.userRoot()
     override fun get(key: String): String? = preferences.get(key, null)

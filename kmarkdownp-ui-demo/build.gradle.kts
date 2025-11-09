@@ -46,8 +46,8 @@ kotlin {
             implementation(compose.components.resources)
             implementation(libs.kermit)
             implementation(libs.ktoken)
-            implementation(projects.kmarkdownpUi)
-            implementation(projects.kmarkdownpParserJetbrains)
+            implementation(project(":kmarkdownp-ui"))
+            implementation(project(":kmarkdownp-parser-jetbrains"))
 //            implementation(projects.kmarkdownpParserTreesitter)
 
         }

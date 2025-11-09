@@ -22,8 +22,8 @@ kotlin {
 
         commonMain.dependencies {
             implementation(libs.jetbrains.markdown)
-            compileOnly(projects.kmarkdownp)
-            api(projects.kmarkdownp)
+            compileOnly(project(":kmarkdownp"))
+            api(project(":kmarkdownp"))
         }
     }
 }

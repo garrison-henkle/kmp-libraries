@@ -26,11 +26,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.kermit)
-            implementation(projects.betterBottomSheet)
-        }
-
-        all {
-            languageSettings.optIn("kotlin.experimental.ExperimentalNativeApi")
+            implementation(project(":better-bottom-sheet"))
         }
     }
 }
