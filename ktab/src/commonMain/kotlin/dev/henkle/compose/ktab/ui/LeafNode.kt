@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.unit.toSize
@@ -54,6 +56,31 @@ internal fun <T : Tab<T>> LeafNode(
                     dropZoneOverlay(zone)
                 }
             }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .nonConsumingClickable(key1 = node.id) {
+                        if (node.tabs.isNotEmpty()) {
+                            tabManager.notifyTabFocused(tab = node.selectedTab)
+                        }
+                    },
+            )
         }
     }
 }
+
+private fun Modifier.nonConsumingClickable(
+    key1: Any?,
+    onClick: () -> Unit,
+): Modifier =
+    pointerInput(key1 = key1) {
+        awaitPointerEventScope {
+            while (true) {
+                val event = awaitPointerEvent()
+                if (event.type == PointerEventType.Press) {
+                    onClick()
+                }
+            }
+        }
+    }

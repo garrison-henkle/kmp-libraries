@@ -54,14 +54,22 @@ class TabManager<T: Tab<T>> internal constructor(
     private val defaultSplitRatio: Float,
 ) {
     // tab/node state
+
     internal var root by mutableStateOf<PaneNode<T>>(value = LeafNode(parent = null))
         private set
+
     internal var draggedTab by mutableStateOf<DraggedTab<T>?>(value = null)
         private set
     internal var dragPosition by mutableStateOf<Offset?>(value = null)
         private set
 
     internal var hoveredNode by mutableStateOf<HoveredNode<T>?>(value = null)
+        private set
+
+    /**
+     * The last tab that had some sort of user input (e.g. recently dragged, split, or clicked)
+     */
+    var lastFocusedTab by mutableStateOf<T?>(value = null)
         private set
 
     /**
@@ -271,6 +279,7 @@ class TabManager<T: Tab<T>> internal constructor(
                     )
                 }
                 targetNode.selectedIndex = tabIndex
+                notifyTabFocused(tab = targetNode.tabs[tabIndex])
             }
             return
         }
@@ -280,6 +289,15 @@ class TabManager<T: Tab<T>> internal constructor(
             tab = tab,
             zone = zone,
         )
+    }
+
+    // focus methods
+
+    /**
+     * Sets the provided tab as the last focused tab in this tab manager
+     */
+    fun notifyTabFocused(tab: T) {
+        lastFocusedTab = tab
     }
 
     // position and drop zone methods
@@ -418,7 +436,9 @@ class TabManager<T: Tab<T>> internal constructor(
         val targetNodeParent = targetNode.parent
         val targetNodeReplacement = when (zone) {
             DropZone.Center -> {
-                targetNode.tabs += tab
+                val newTabs = targetNode.tabs + tab
+                targetNode.tabs = newTabs
+                targetNode.selectTab(index = newTabs.lastIndex)
                 null
             }
             DropZone.Top -> {
@@ -470,6 +490,8 @@ class TabManager<T: Tab<T>> internal constructor(
                 }
             }
         }
+
+        notifyTabFocused(tab = tab)
 
         if (targetNodeReplacement != null) {
             targetNodeParent?.also { parent ->

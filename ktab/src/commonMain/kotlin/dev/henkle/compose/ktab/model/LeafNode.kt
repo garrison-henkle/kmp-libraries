@@ -19,11 +19,11 @@ class LeafNode<T: Tab<T>> internal constructor(
 ) : PaneNode<T>() {
     override var parent by mutableStateOf(value = parent)
         internal set
-    // avoiding SnapshotStateList here out of PTSD
 
     /**
      * The current tabs contained in this leaf
      */
+    // avoiding SnapshotStateList here out of PTSD
     var tabs by mutableStateOf(value = tabs)
         internal set
 
