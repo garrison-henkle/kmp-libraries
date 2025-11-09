@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import dev.henkle.store.Storage
 
+/**
+ * A [Storage] abstraction for Android that wraps [SharedPreferences]
+ */
 @SuppressLint("ApplySharedPref")
 abstract class AbstractSharedPreferencesStorage(
     private val preferences: SharedPreferences,

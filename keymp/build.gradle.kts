@@ -1,8 +1,4 @@
-
-import dev.henkle.conventions.optIntoExpectActualClasses
-import dev.henkle.conventions.optIntoNewKotlinFeatures
 import dev.henkle.utils.getStringProperty
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
     alias(libs.plugins.conventionsKMPLibrary)
@@ -31,7 +27,7 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.androidx.security.crypto)
-            implementation(projects.contextProvider)
+            implementation(project(":context-provider"))
         }
 
         jvmMain.dependencies {

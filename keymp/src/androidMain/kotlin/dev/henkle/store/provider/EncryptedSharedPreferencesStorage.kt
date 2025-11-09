@@ -4,7 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import dev.henkle.store.Storage
 
+/**
+ * A [Storage] implementation backed by [EncryptedSharedPreferences]
+ */
 @SuppressLint("ApplySharedPref")
 class EncryptedSharedPreferencesStorage(context: Context): AbstractSharedPreferencesStorage(
     preferences = run {

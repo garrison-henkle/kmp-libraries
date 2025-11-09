@@ -3,6 +3,10 @@ package dev.henkle.store.provider
 import dev.henkle.store.Storage
 import kotlinx.browser.window
 
+/**
+ * A [Storage] implementation backed by the browser's [org.w3c.dom.Storage]
+ * API (specifically the browser's local storage implementation of the API)
+ */
 class LocalStorage : Storage {
     override fun get(key: String): String? =
         window.localStorage.getItem(key = key)

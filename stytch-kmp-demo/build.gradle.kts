@@ -67,15 +67,11 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.kermit)
-            implementation(projects.stytchKmp)
+            implementation(project(":stytch-kmp"))
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.logback)
-        }
-
-        all {
-            languageSettings.optIn("kotlin.experimental.ExperimentalNativeApi")
         }
     }
 }

@@ -23,7 +23,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(compose.ui)
-            implementation(projects.pager)
+            implementation(project(":pager"))
         }
     }
 }

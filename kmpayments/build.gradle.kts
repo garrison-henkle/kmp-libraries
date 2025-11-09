@@ -42,7 +42,7 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.google.play.billing)
-            implementation(projects.contextProvider)
+            implementation(project(":context-provider"))
         }
     }
 }

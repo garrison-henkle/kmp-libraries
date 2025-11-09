@@ -41,7 +41,7 @@ kotlin {
             implementation(libs.kotlinx.atomic.fu)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.lazy.table)
-            implementation(projects.kmarkdownp)
+            implementation(project(":kmarkdownp"))
         }
 
         desktopMain.dependencies {

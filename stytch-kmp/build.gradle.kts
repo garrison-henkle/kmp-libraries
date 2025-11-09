@@ -65,14 +65,14 @@ kotlin {
             implementation(libs.ktor.logging)
             implementation(libs.ktor.serialization)
             implementation(libs.secure.random)
-            implementation(projects.keymp)
+            implementation(project(":keymp"))
         }
 
         androidMain.dependencies {
             implementation(libs.androidx.activity)
             implementation(libs.androidx.browser)
             implementation(libs.ktor.client.engine.android)
-            implementation(projects.contextProvider)
+            implementation(project(":context-provider"))
         }
 
         appleMain.dependencies {
@@ -91,10 +91,6 @@ kotlin {
         webMain.dependencies {
             implementation(libs.ktor.client.engine.js)
             implementation(libs.kotlinx.browser)
-        }
-
-        all {
-            languageSettings.optIn("kotlin.experimental.ExperimentalNativeApi")
         }
     }
 

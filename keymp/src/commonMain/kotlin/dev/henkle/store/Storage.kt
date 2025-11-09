@@ -1,5 +1,8 @@
 package dev.henkle.store
 
+/**
+ * A key-value storage implementation
+ */
 interface Storage {
     operator fun get(key: String): String?
     operator fun set(key: String, value: String)

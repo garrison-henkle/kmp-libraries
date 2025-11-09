@@ -4,6 +4,9 @@ import dev.henkle.store.Storage
 import platform.Foundation.NSString
 import platform.Foundation.NSUserDefaults
 
+/**
+ * A [Storage] implementation backed by UserDefaults/NSUserDefaults
+ */
 @Suppress("CAST_NEVER_SUCCEEDS")
 class UserDefaultsStorage : Storage {
     private val defaults = NSUserDefaults.standardUserDefaults
