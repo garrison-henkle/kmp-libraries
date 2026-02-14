@@ -1,0 +1,153 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "**/*.kt"
+      - "**/*.kts"
+      - "**/jni/*"
+      - gradle/**
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{github.workflow}}-${{github.ref_name}}
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    name: Generate grammar files
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+          cache-dependency-path: |
+            kotlin-tree-sitter/gradle/libs.versions.toml
+            kotlin-tree-sitter/gradle/wrapper/gradle-wrapper.properties
+      - name: Cache Kotlin/Native prebuilt
+        uses: actions/cache@v4
+        with:
+          path: ${{runner.tool_cache}}/konan/kotlin-native-prebuilt-*
+          key: konan-${{runner.os}}-prebuilt-1.9
+      - name: Generate files
+        run: ./kotlin-tree-sitter/gradlew --no-daemon generateGrammarFiles
+        env:
+          KONAN_DATA_DIR: ${{runner.tool_cache}}/konan
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-files
+          path: kotlin-tree-sitter/languages/*/build/generated/**
+          retention-days: 1
+  test:
+    runs-on: ${{matrix.os}}
+    name: >-
+      Test ${{matrix.platform}} platform
+      ${{matrix.lib_platform && format('({0}-{1})', matrix.lib_platform, matrix.lib_arch)}}
+    needs: [generate]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: JVM
+            targets: :ktreesitter:jvmTest
+            lib_platform: linux
+            lib_arch: x64
+          - os: windows-latest
+            platform: JVM
+            targets: :ktreesitter:jvmTest
+            lib_platform: windows
+            lib_arch: x64
+          - os: macos-latest
+            platform: JVM
+            targets: :ktreesitter:jvmTest
+            lib_platform: macos
+            lib_arch: aarch64
+          - os: ubuntu-latest
+            platform: Android
+            targets: :ktreesitter:assembleDebug
+          - os: ubuntu-latest
+            platform: Linux
+            targets: >-
+              :ktreesitter:compileKotlinLinuxArm64
+              :ktreesitter:linuxX64Test
+          - os: windows-latest
+            platform: Windows
+            targets: :ktreesitter:mingwX64Test
+          - os: macos-latest
+            platform: macOS/iOS
+            targets: >-
+              :ktreesitter:macosX64Test
+              :ktreesitter:macosArm64Test
+              :ktreesitter:iosSimulatorArm64Test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+          cache-dependency-path: |
+            kotlin-tree-sitter/gradle/libs.versions.toml
+            kotlin-tree-sitter/gradle/wrapper/gradle-wrapper.properties
+      - name: Set up cross compilation
+        run: sudo apt-get install -qy {binutils,gcc}-aarch64-linux-gnu
+        if: matrix.platform == 'Linux'
+      - name: Restore Kotlin/Native prebuilt
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{runner.tool_cache}}/konan/kotlin-native-prebuilt-*
+          key: konan-${{runner.os}}-prebuilt-1.9
+      - name: Download generated files
+        uses: actions/download-artifact@v4
+        with:
+          path: kotlin-tree-sitter/languages
+          name: generated-files
+      - name: Build JNI libraries
+        if: matrix.platform == 'JVM'
+        run: ./kotlin-tree-sitter/.github/scripts/build-jni.${{matrix.os == 'windows-latest' && 'ps1' || 'sh'}}
+        env:
+          CMAKE_INSTALL_LIBDIR: kotlin-tree-sitter/lib/${{matrix.lib_platform}}/${{matrix.lib_arch}}
+      - name: Cache Kotlin/Native dependencies
+        id: cache-dependencies
+        uses: actions/cache@v4
+        if: matrix.platform != 'JVM' && matrix.platform != 'Android'
+        with:
+          path: ${{runner.tool_cache}}/konan/dependencies
+          key: konan-${{runner.os}}-dependencies
+      - name: Download Kotlin/Native dependencies
+        if: matrix.platform == 'macOS/iOS' && steps.cache-dependencies.outputs.cache-hit != 'true'
+        run: |-
+          mkdir -p "$RUNNER_TOOL_CACHE/konan/dependencies"
+          curl -LSs https://download-cdn.jetbrains.com/kotlin/native/$DEP.tar.gz | \
+            tar -xzf - -C "$RUNNER_TOOL_CACHE/konan/dependencies"
+        env:
+          DEP: apple-llvm-20200714-macos-aarch64-essentials
+      - name: Run tests
+        run: ./kotlin-tree-sitter/gradlew --no-daemon ${{matrix.targets}}
+        env:
+          KONAN_DATA_DIR: ${{runner.tool_cache}}/konan
+      - name: Report test results
+        uses: mikepenz/action-junit-report@v5
+        if: matrix.platform == 'JVM' && !cancelled()
+        with:
+          annotate_only: true
+          detailed_summary: true
+          report_paths: kotlin-tree-sitter/ktreesitter/build/reports/xml/*
